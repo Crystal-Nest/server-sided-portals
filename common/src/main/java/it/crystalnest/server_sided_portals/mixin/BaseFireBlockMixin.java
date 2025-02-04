@@ -1,6 +1,8 @@
 package it.crystalnest.server_sided_portals.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import it.crystalnest.server_sided_portals.api.CustomPortalChecker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,7 +15,6 @@ import net.minecraft.world.level.portal.PortalShape;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Optional;
 
@@ -48,16 +49,17 @@ public abstract class BaseFireBlockMixin {
   }
 
   /**
-   * Redirects the call to {@link Level#getBlockState(BlockPos)} inside the method {@link BaseFireBlock#isPortal(Level, BlockPos, Direction)}.<br>
+   * Wraps the call to {@link Level#getBlockState(BlockPos)} inside the method {@link BaseFireBlock#isPortal(Level, BlockPos, Direction)}.<br>
    * If the {@link BlockState} is for a Custom Portal Dimension, returns {@link Blocks#OBSIDIAN Obsidian} instead.
    *
-   * @param instance {@link Level} owning the redirected method.
+   * @param instance {@link Level} owning the wrapped method.
    * @param pos position.
+   * @param original original {@link Level#getBlockState(BlockPos)} call.
    * @return {@link Blocks#OBSIDIAN Obsidian} or the original {@link BlockState}.
    */
-  @Redirect(method = "isPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;"))
-  private static BlockState redirectGetBlockState(Level instance, BlockPos pos) {
-    return checkCustomPortalFrame(instance, pos) ? Blocks.OBSIDIAN.defaultBlockState() : instance.getBlockState(pos);
+  @WrapOperation(method = "isPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;"))
+  private static BlockState wrapGetBlockState(Level instance, BlockPos pos, Operation<BlockState> original) {
+    return checkCustomPortalFrame(instance, pos) ? Blocks.OBSIDIAN.defaultBlockState() : original.call(instance, pos);
   }
 
   /**
@@ -78,14 +80,15 @@ public abstract class BaseFireBlockMixin {
   }
 
   /**
-   * Redirects the call to {@link Optional#isPresent()} inside the method {@link BaseFireBlock#onPlace(BlockState, Level, BlockPos, BlockState, boolean)}.<br>
+   * Wraps the call to {@link Optional#isPresent()} inside the method {@link BaseFireBlock#onPlace(BlockState, Level, BlockPos, BlockState, boolean)}.<br>
    * Checks also whether the portal can be lit up by fire.
    *
    * @param instance {@link Optional} {@link PortalShape} ({@link CustomPortalChecker}).
+   * @param original original {@link Optional#isPresent()} call.
    * @return whether the portal can be lit up.
    */
-  @Redirect(method = "onPlace", at = @At(value = "INVOKE", target = "Ljava/util/Optional;isPresent()Z"))
-  private boolean redirectIsPresent(Optional<PortalShape> instance) {
-    return instance.isPresent() && !CustomPortalChecker.hasCustomPortalIgniter(((CustomPortalChecker) instance.get()).dimension());
+  @WrapOperation(method = "onPlace", at = @At(value = "INVOKE", target = "Ljava/util/Optional;isPresent()Z"))
+  private boolean wrapIsPresent(Optional<PortalShape> instance, Operation<Boolean> original) {
+    return original.call(instance) && instance.isPresent() && !CustomPortalChecker.hasCustomPortalIgniter(((CustomPortalChecker) instance.get()).dimension());
   }
 }

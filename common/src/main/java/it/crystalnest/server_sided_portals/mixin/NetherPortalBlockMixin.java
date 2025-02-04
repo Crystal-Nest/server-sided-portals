@@ -1,6 +1,8 @@
 package it.crystalnest.server_sided_portals.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import it.crystalnest.server_sided_portals.Constants;
 import it.crystalnest.server_sided_portals.api.CustomPortalChecker;
 import net.minecraft.core.BlockPos;
@@ -19,7 +21,6 @@ import net.minecraft.world.level.portal.DimensionTransition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Objects;
@@ -47,7 +48,7 @@ public abstract class NetherPortalBlockMixin {
   }
 
   /**
-   * Redirects the call to {@link MinecraftServer#getLevel(ResourceKey)} inside the method {@link NetherPortalBlock#getPortalDestination(ServerLevel, Entity, BlockPos)}.<br>
+   * Wraps the call to {@link MinecraftServer#getLevel(ResourceKey)} inside the method {@link NetherPortalBlock#getPortalDestination(ServerLevel, Entity, BlockPos)}.<br>
    * Corrects the destination dimension if needed.
    *
    * @param instance Minecraft server.
@@ -57,12 +58,12 @@ public abstract class NetherPortalBlockMixin {
    * @param pos entrance position.
    * @return the correct dimension the entity should travel to.
    */
-  @Redirect(method = "getPortalDestination", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"))
-  private ServerLevel onGetPortalDestination(MinecraftServer instance, ResourceKey<Level> dimension, ServerLevel level, Entity entity, BlockPos pos) {
+  @WrapOperation(method = "getPortalDestination", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"))
+  private ServerLevel onGetPortalDestination(MinecraftServer instance, ResourceKey<Level> dimension, Operation<ServerLevel> original, ServerLevel level, Entity entity, BlockPos pos) {
     if (dimension == Level.NETHER && CustomPortalChecker.isCustomPortal(level, pos)) {
       return instance.getLevel(level.dimension() == Level.OVERWORLD ? Objects.requireNonNull(CustomPortalChecker.getPortalDimension(level, pos)) : Level.OVERWORLD);
     }
-    return instance.getLevel(dimension);
+    return original.call(instance, dimension);
   }
 
   /**
