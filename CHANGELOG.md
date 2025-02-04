@@ -9,6 +9,11 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Port to 1.21.4.
 
+## [v2.0.1] - 2025/02/05
+
+- Implemented all changes from `v.2.0.0` (1.20.4 and below only).
+- Improved mod compatibility.
+
 ## [v2.0.0] - 2025/01/01
 
 - 1.21 and above only.
