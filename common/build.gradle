@@ -12,7 +12,7 @@ minecraft {
 
 dependencies {
   compileOnly group: "org.spongepowered", name: "mixin", version: "0.8.5"
-  compileOnly group: "io.github.llamalad7", name: "mixinextras-common", version: "0.3.6"
+  compileOnly group: "io.github.llamalad7", name: "mixinextras-common", version: "$mixin_extras_version"
   implementation "it.crystalnest:cobweb-common:${minecraft_version}-${cobweb_version}"
 }
 

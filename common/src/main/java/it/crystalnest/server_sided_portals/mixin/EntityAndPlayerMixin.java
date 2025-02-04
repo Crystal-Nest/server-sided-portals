@@ -53,7 +53,7 @@ public abstract class EntityAndPlayerMixin implements Teleportable {
   }
 
   /**
-   * Injects at the start of the method {@link Entity#findDimensionEntryPoint(ServerLevel)}.<br />
+   * Injects at the start of the method {@link Entity#findDimensionEntryPoint(ServerLevel)}.<br>
    * If present, sets the custom portal info.
    *
    * @param destination destination.
@@ -67,7 +67,7 @@ public abstract class EntityAndPlayerMixin implements Teleportable {
   }
 
   /**
-   * Injects at the start of the method {@link Entity#getExitPortal(ServerLevel, BlockPos, boolean, WorldBorder)}.<br />
+   * Injects at the start of the method {@link Entity#getExitPortal(ServerLevel, BlockPos, boolean, WorldBorder)}.<br>
    * Sets the nightworld origin dimension flag for this entity.
    *
    * @param destination destination.
