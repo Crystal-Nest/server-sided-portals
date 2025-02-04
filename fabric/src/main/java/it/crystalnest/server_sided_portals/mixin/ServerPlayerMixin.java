@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin {
   /**
-   * Injects into the method {@link ServerPlayer#changeDimension(ServerLevel)} after the call to {@link ServerPlayer#findDimensionEntryPoint(ServerLevel)}.<br />
+   * Injects into the method {@link ServerPlayer#changeDimension(ServerLevel)} after the call to {@link ServerPlayer#findDimensionEntryPoint(ServerLevel)}.<br>
    * Resets the {@link net.fabricmc.fabric.mixin.dimension.EntityMixin#customTeleportTarget customTeleportTarget}.
    *
    * @param destination dimension.

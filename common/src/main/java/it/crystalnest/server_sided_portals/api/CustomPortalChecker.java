@@ -1,10 +1,10 @@
 package it.crystalnest.server_sided_portals.api;
 
-import it.crystalnest.server_sided_portals.Constants;
 import net.minecraft.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -25,13 +26,14 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Handles checking whether a portal frame is for a Custom Portal.
  */
 public interface CustomPortalChecker {
   /**
-   * Gets the Custom Dimension related to the Custom Portal.
+   * Gets the Custom Dimension related to the Custom Portal at the given position.
    *
    * @param level dimension.
    * @param pos position.
@@ -61,9 +63,8 @@ public interface CustomPortalChecker {
    * @param dimension name of the target dimension.
    * @return whether the Portal at the given position is for the specified dimension.
    */
-  static boolean isPortalForDimension(Level level, BlockPos pos, String dimension) {
-    ResourceLocation dimensionKey = getPortalDimension(level, pos).location();
-    return dimensionKey.getNamespace().equals(Constants.MOD_ID) && dimensionKey.getPath().equalsIgnoreCase(dimension);
+  static boolean isPortalForDimension(Level level, BlockPos pos, ResourceLocation dimension) {
+    return getPortalDimension(level, pos).location().equals(dimension);
   }
 
   /**
@@ -71,60 +72,100 @@ public interface CustomPortalChecker {
    *
    * @param level dimension.
    * @param pos position.
-   * @return whether there is a Nightworld portal.
+   * @return whether there is a Custom Portal.
    */
   static boolean isCustomPortal(Level level, BlockPos pos) {
-    return isCustomDimension(getPortalDimension(level, pos));
+    return hasCustomPortalFrame(getPortalDimension(level, pos));
   }
 
   /**
-   * Returns the list of Custom Dimensions.
+   * Returns the list of dimensions with a Custom Portal Frame.
    *
-   * @param server {@link ServerLevel}.
-   * @return the list of Custom Dimensions.
+   * @param level {@link ServerLevel}.
+   * @return the list of dimensions with a Custom Portal Frame.
    */
-  static List<ResourceKey<Level>> getCustomDimensions(ServerLevel server) {
-    return server.getServer().levelKeys().stream().filter(CustomPortalChecker::isCustomDimension).toList();
+  static List<ResourceKey<Level>> getDimensionsWithCustomPortal(ServerLevel level) {
+    return level.getServer().levelKeys().stream().filter(CustomPortalChecker::hasCustomPortalFrame).toList();
   }
 
   /**
-   * Whether the given dimension is a Custom one.
+   * Whether the given dimension has a Custom Portal Frame.
    *
    * @param level dimension.
-   * @return whether the given dimension is a Custom one.
+   * @return whether the given dimension has a Custom Portal Frame.
    */
-  static boolean isCustomDimension(Level level) {
-    return isCustomDimension(level.dimension());
+  static boolean hasCustomPortalFrame(Level level) {
+    return hasCustomPortalFrame(level.dimension());
   }
 
   /**
-   * Whether the given dimension is a Custom one.
+   * Whether the given dimension has a Custom Portal Frame.
    *
    * @param dimension dimension key.
-   * @return whether the given dimension is a Custom one.
+   * @return whether the given dimension has a Custom Portal Frame.
    */
-  static boolean isCustomDimension(ResourceKey<Level> dimension) {
-    return Constants.MOD_ID.equals(dimension.location().getNamespace());
+  static boolean hasCustomPortalFrame(ResourceKey<Level> dimension) {
+    return BuiltInRegistries.BLOCK.getTag(getCustomPortalFrameTag(dimension)).isPresent();
   }
 
   /**
-   * Returns the Block Tag for the Custom Portal frame related to the given dimension.
+   * Returns the Block Tag for the Custom Portal Frame related to the given dimension.
    *
    * @param dimension dimension.
-   * @return Block Tag for the Custom Portal frame.
+   * @return Block Tag for the Custom Portal Frame.
    */
-  static TagKey<Block> getCustomPortalFrameBlockTag(ResourceKey<Level> dimension) {
-    return TagKey.create(Registries.BLOCK, dimension.location());
+  static TagKey<Block> getCustomPortalFrameTag(ResourceKey<Level> dimension) {
+    return TagKey.create(Registries.BLOCK, new ResourceLocation(dimension.location().getNamespace(), dimension.location().getPath() + "_portal_frame"));
   }
 
   /**
-   * Returns a random Block for the Custom Portal frame related to the given dimension.
+   * Returns a random Block from the Custom Portal Frame tag related to the given dimension.
    *
    * @param level dimension.
-   * @return a random Block for the Custom Portal frame.
+   * @return a random Block from the Custom Portal Frame tag.
    */
   static Block getCustomPortalFrameBlock(Level level) {
-    return BuiltInRegistries.BLOCK.getTag(getCustomPortalFrameBlockTag(level.dimension())).map(holders -> holders.getRandomElement(level.getRandom()).orElse(Holder.direct(Blocks.OBSIDIAN)).value()).orElse(Blocks.OBSIDIAN);
+    return BuiltInRegistries.BLOCK.getTag(getCustomPortalFrameTag(level.dimension())).map(holders -> holders.getRandomElement(level.getRandom()).orElse(Holder.direct(Blocks.OBSIDIAN)).value()).orElse(Blocks.OBSIDIAN);
+  }
+
+  /**
+   * Whether the given dimension has a Custom Portal Igniter item.
+   *
+   * @param level dimension.
+   * @return whether the given dimension has a Custom Portal Igniter item.
+   */
+  static boolean hasCustomPortalIgniter(Level level) {
+    return hasCustomPortalIgniter(level.dimension());
+  }
+
+  /**
+   * Whether the given dimension has a Custom Portal Igniter item.
+   *
+   * @param dimension dimension key.
+   * @return whether the given dimension has a Custom Portal Igniter item.
+   */
+  static boolean hasCustomPortalIgniter(ResourceKey<Level> dimension) {
+    return BuiltInRegistries.ITEM.getTag(getCustomPortalIgniterTag(dimension)).isPresent();
+  }
+
+  /**
+   * Returns the Item Tag for the Custom Portal Igniter item related to the given dimension.
+   *
+   * @param dimension dimension.
+   * @return Item Tag for the Custom Portal Igniter item.
+   */
+  static TagKey<Item> getCustomPortalIgniterTag(ResourceKey<Level> dimension) {
+    return TagKey.create(Registries.ITEM, new ResourceLocation(dimension.location().getNamespace(), dimension.location().getPath() + "_portal_igniter"));
+  }
+
+  /**
+   * Returns the {@link Optional} {@link HolderSet.Named} of {@link Item}s from the Custom Portal Igniter Item Tag related to the given dimension.
+   *
+   * @param dimension dimension key.
+   * @return a random Block from the Custom Portal Frame tag.
+   */
+  static Optional<HolderSet.Named<Item>> getCustomPortalIgniterItems(ResourceKey<Level> dimension) {
+    return BuiltInRegistries.ITEM.getTag(getCustomPortalIgniterTag(dimension));
   }
 
   /**

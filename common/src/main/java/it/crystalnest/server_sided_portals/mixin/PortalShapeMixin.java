@@ -1,6 +1,8 @@
 package it.crystalnest.server_sided_portals.mixin;
 
+import it.crystalnest.server_sided_portals.Constants;
 import it.crystalnest.server_sided_portals.api.CustomPortalChecker;
+import it.crystalnest.server_sided_portals.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -24,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.lang.reflect.Field;
 import java.util.Objects;
 
 /**
@@ -111,7 +114,7 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
   }
 
   /**
-   * Injects at the end of the constructor.<br />
+   * Injects at the end of the constructor.<br>
    * Checks if a Custom Portal can be created.
    *
    * @param level dimension.
@@ -122,24 +125,42 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
   @Inject(method = "<init>(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction$Axis;)V", at = @At(value = "TAIL"))
   private void onInit(LevelAccessor level, BlockPos pos, Axis axis, CallbackInfo ci) {
     if (!level.isClientSide()) {
+      Object bnShape = null;
+      if (Services.PLATFORM.isModLoaded("betternether")) {
+        // Try to circumvent incompatibility with BetterNether.
+        try {
+          Constants.LOGGER.debug("Attempting to nullify field 'shape' added by mod 'betternether'...");
+          bnShape = this.getClass().getDeclaredField("shape").get(this);
+          this.getClass().getDeclaredField("shape").set(this, null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+          Constants.LOGGER.error("Failed to nullify field 'shape' added by mod 'betternether'", e);
+          Constants.LOGGER.debug("Available fields for PortalShape were:");
+          for (Field field : this.getClass().getDeclaredFields()) {
+            Constants.LOGGER.debug(field.getName());
+          }
+        }
+      }
       ServerLevel serverLevel = (ServerLevel) level;
-      if (this.isValid() && CustomPortalChecker.isCustomDimension(serverLevel)) {
+      if (this.isValid() && CustomPortalChecker.hasCustomPortalFrame(serverLevel)) {
         // If it's a Nether Portal, and we are in a Custom Dimension, prevent creating the portal.
         this.bottomLeft = null;
         this.setWidth(1);
         height = 1;
-      } else if (!isValid() && (serverLevel.dimension() == Level.OVERWORLD || CustomPortalChecker.isCustomDimension(serverLevel))) {
-        // If it's not a Nether Portal, and we are either in the Overworld or in a Custom Dimension, check if it's a Custom Portal.
-        for (ResourceKey<Level> dim : CustomPortalChecker.getCustomDimensions(serverLevel)) {
-          TagKey<Block> frameBlock = CustomPortalChecker.getCustomPortalFrameBlockTag(dim);
-          bottomLeft = calculateBottomLeftForCustomDimension(pos, frameBlock);
-          if (bottomLeft != null) {
-            setWidth(calculateWidthForCustomDimension(frameBlock));
-            if (width > 0) {
-              height = calculateHeightForCustomDimension(frameBlock);
-              this.dimension = dim;
-              // The first Custom Dimension to match breaks the loop and validates the Custom Portal.
-              break;
+      } else if (!isValid() && (serverLevel.dimension() == Level.OVERWORLD || CustomPortalChecker.hasCustomPortalFrame(serverLevel))) {
+        // If it's not a Nether Portal, and we are either in the Overworld or in a Custom Dimension, check whether it's a Custom Portal.
+        for (ResourceKey<Level> dim : CustomPortalChecker.getDimensionsWithCustomPortal(serverLevel)) {
+          // A Custom Portal can light up only in the Overworld or in the Custom Dimension it is for.
+          if (serverLevel.dimension() == Level.OVERWORLD || dim == serverLevel.dimension()) {
+            TagKey<Block> frameBlock = CustomPortalChecker.getCustomPortalFrameTag(dim);
+            bottomLeft = calculateBottomLeftForCustomDimension(pos, frameBlock);
+            if (bottomLeft != null) {
+              setWidth(calculateWidthForCustomDimension(frameBlock));
+              if (width > 0) {
+                height = calculateHeightForCustomDimension(frameBlock);
+                this.dimension = dim;
+                // The first Custom Dimension to match breaks the loop and validates the Custom Portal.
+                break;
+              }
             }
           }
         }
@@ -148,6 +169,14 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
           bottomLeft = pos;
           setWidth(1);
           height = 1;
+        }
+      }
+      if (bnShape != null && dimension == Level.NETHER && (serverLevel.dimension() == Level.OVERWORLD || serverLevel.dimension() == Level.NETHER)) {
+        try {
+          Constants.LOGGER.debug("Attempting to restore field 'shape' added by mod 'betternether'...");
+          this.getClass().getDeclaredField("shape").set(this, bnShape);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+          Constants.LOGGER.error("Failed to restore field 'shape' added by mod 'betternether'", e);
         }
       }
     }
@@ -164,7 +193,7 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
   @Nullable
   @SuppressWarnings({"ConstantValue", "StatementWithEmptyBody"})
   private BlockPos calculateBottomLeftForCustomDimension(BlockPos pos, TagKey<Block> frameBlock) {
-    for (int i = Math.max(level.getMinBuildHeight(), pos.getY() - 21); pos.getY() > i && isEmpty(level.getBlockState(pos.below())); pos = pos.below());
+    for (int i = Math.max(level.getMinBuildHeight(), pos.getY() - 21); pos.getY() > i && isEmpty(level.getBlockState(pos.below())); pos = pos.below()) ;
     Direction direction = rightDir.getOpposite();
     int j = getDistanceUntilEdgeAboveFrameForCustomDimension(frameBlock, pos, direction) - 1;
     return j < 0 ? null : pos.relative(direction, j);
