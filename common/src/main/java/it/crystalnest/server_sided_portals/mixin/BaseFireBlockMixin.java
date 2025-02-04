@@ -1,5 +1,8 @@
 package it.crystalnest.server_sided_portals.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import it.crystalnest.server_sided_portals.api.CustomPortalChecker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -8,39 +11,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.portal.PortalShape;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+
+import java.util.Optional;
 
 /**
  * Injects into {@link BaseFireBlock} to alter dimension travel.
  */
 @Mixin(BaseFireBlock.class)
 public abstract class BaseFireBlockMixin {
-  /**
-   * Shadowed {@link BaseFireBlock#inPortalDimension(Level)}.
-   *
-   * @param level level.
-   * @return whether the dimension is {@link Level#OVERWORLD Overworld} or {@link Level#NETHER Nether}.
-   */
-  @Shadow
-  private static boolean inPortalDimension(Level level) {
-    throw new UnsupportedOperationException("Tried to call a dummy body of a shadowed method: BaseFireBlock#inPortalDimension(Level)");
-  }
-
-  /**
-   * Checks whether the given dimension is a suitable to light up a Nightworld portal.
-   *
-   * @param level dimension.
-   * @return whether the given dimension is a suitable to light up a Nightworld portal.
-   */
-  @Unique
-  private static boolean inCustomPortalDimension(Level level) {
-    return BaseFireBlockMixin.inPortalDimension(level) || CustomPortalChecker.isCustomDimension(level);
-  }
-
   /**
    * Checks whether there is any Custom Portal Frame Block at the given position.
    *
@@ -50,43 +32,62 @@ public abstract class BaseFireBlockMixin {
    */
   @Unique
   private static boolean checkCustomPortalFrame(Level level, BlockPos pos) {
-    return level instanceof ServerLevel server && CustomPortalChecker.getCustomDimensions(server).stream().map(CustomPortalChecker::getCustomPortalFrameBlockTag).anyMatch(tag -> level.getBlockState(pos).is(tag));
+    return level instanceof ServerLevel server && CustomPortalChecker.getDimensionsWithCustomPortal(server).stream().map(CustomPortalChecker::getCustomPortalFrameTag).anyMatch(tag -> level.getBlockState(pos).is(tag));
   }
 
   /**
-   * Redirects the call to {@link BaseFireBlock#inPortalDimension(Level)} inside the method {@link BaseFireBlock#isPortal(Level, BlockPos, Direction)}.<br />
+   * Modifies the value of the check at {@link BaseFireBlock#inPortalDimension(Level)} inside the method {@link BaseFireBlock#isPortal(Level, BlockPos, Direction)}.<br>
    * Checks also whether the dimension is suitable for a Custom Portal.
    *
    * @param level dimension.
    * @return check result.
    */
-  @Redirect(method = "isPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/BaseFireBlock;inPortalDimension(Lnet/minecraft/world/level/Level;)Z"))
-  private static boolean redirectInPortalDimension$isPortal(Level level) {
-    return BaseFireBlockMixin.inCustomPortalDimension(level);
+  @ModifyExpressionValue(method = "isPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/BaseFireBlock;inPortalDimension(Lnet/minecraft/world/level/Level;)Z"))
+  private static boolean modifyInPortalDimension$isPortal(boolean original, Level level) {
+    return original || CustomPortalChecker.hasCustomPortalFrame(level);
   }
 
   /**
-   * Redirects the call to {@link Level#getBlockState(BlockPos)} inside the method {@link BaseFireBlock#isPortal(Level, BlockPos, Direction)}.<br />
+   * Redirects the call to {@link Level#getBlockState(BlockPos)} inside the method {@link BaseFireBlock#isPortal(Level, BlockPos, Direction)}.<br>
    * If the {@link BlockState} is for a Custom Portal Dimension, returns {@link Blocks#OBSIDIAN Obsidian} instead.
    *
    * @param instance {@link Level} owning the redirected method.
    * @param pos position.
+   * @param original original {@link Level#getBlockState(BlockPos)} call.
    * @return {@link Blocks#OBSIDIAN Obsidian} or the original {@link BlockState}.
    */
-  @Redirect(method = "isPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;"))
-  private static BlockState redirectGetBlockState(Level instance, BlockPos pos) {
-    return checkCustomPortalFrame(instance, pos) ? Blocks.OBSIDIAN.defaultBlockState() : instance.getBlockState(pos);
+  @WrapOperation(method = "isPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;"))
+  private static BlockState wrapGetBlockState(Level instance, BlockPos pos, Operation<BlockState> original) {
+    return checkCustomPortalFrame(instance, pos) ? Blocks.OBSIDIAN.defaultBlockState() : original.call(instance, pos);
   }
 
   /**
-   * Redirects the call to {@link BaseFireBlock#inPortalDimension(Level)} inside the method {@link BaseFireBlock#onPlace(BlockState, Level, BlockPos, BlockState, boolean)}.<br />
-   * Checks also whether the {@link Level} is suitable for a Custom Portal.
+   * Modifies the value of the check at {@link BaseFireBlock#inPortalDimension(Level)} inside the method {@link BaseFireBlock#onPlace(BlockState, Level, BlockPos, BlockState, boolean)}.<br>
+   * Checks also whether the dimension is suitable for a Custom Portal.
    *
+   * @param original original check value.
+   * @param state current {@link BlockState}.
    * @param level dimension.
+   * @param pos {@link BlockPos position}.
+   * @param oldState previous {@link BlockState}.
+   * @param isMoving whether the block is moving.
    * @return check result.
    */
-  @Redirect(method = "onPlace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/BaseFireBlock;inPortalDimension(Lnet/minecraft/world/level/Level;)Z"))
-  private boolean redirectInPortalDimension$onPlace(Level level) {
-    return BaseFireBlockMixin.inCustomPortalDimension(level);
+  @ModifyExpressionValue(method = "onPlace", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/BaseFireBlock;inPortalDimension(Lnet/minecraft/world/level/Level;)Z"))
+  private boolean modifyInPortalDimension$onPlace(boolean original, BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+    return original || CustomPortalChecker.hasCustomPortalFrame(level);
+  }
+
+  /**
+   * Redirects the call to {@link Optional#isPresent()} inside the method {@link BaseFireBlock#onPlace(BlockState, Level, BlockPos, BlockState, boolean)}.<br>
+   * Checks also whether the portal can be lit up by fire.
+   *
+   * @param instance {@link Optional} {@link PortalShape} ({@link CustomPortalChecker}).
+   * @param original original {@link Optional#isPresent()} call.
+   * @return whether the portal can be lit up.
+   */
+  @WrapOperation(method = "onPlace", at = @At(value = "INVOKE", target = "Ljava/util/Optional;isPresent()Z"))
+  private boolean wrapIsPresent(Optional<PortalShape> instance, Operation<Boolean> original) {
+    return original.call(instance) && instance.isPresent() && !CustomPortalChecker.hasCustomPortalIgniter(((CustomPortalChecker) instance.get()).dimension());
   }
 }
