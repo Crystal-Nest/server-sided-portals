@@ -129,11 +129,11 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
       if (Services.PLATFORM.isModLoaded("betternether")) {
         // Try to circumvent incompatibility with BetterNether.
         try {
-          Constants.LOGGER.debug("Attempting to nullify field 'shape' added by mod 'betternether'...");
-          bnShape = this.getClass().getDeclaredField("shape").get(this);
-          this.getClass().getDeclaredField("shape").set(this, null);
+          Constants.LOGGER.debug("Attempting to nullify field 'bn_shape' added by mod 'betternether'...");
+          bnShape = this.getClass().getDeclaredField("bn_shape").get(this);
+          this.getClass().getDeclaredField("bn_shape").set(this, null);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-          Constants.LOGGER.error("Failed to nullify field 'shape' added by mod 'betternether'", e);
+          Constants.LOGGER.error("Failed to nullify field 'bn_shape' added by mod 'betternether'", e);
           Constants.LOGGER.debug("Available fields for PortalShape were:");
           for (Field field : this.getClass().getDeclaredFields()) {
             Constants.LOGGER.debug(field.getName());
@@ -173,10 +173,10 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
       }
       if (bnShape != null && dimension == Level.NETHER && (serverLevel.dimension() == Level.OVERWORLD || serverLevel.dimension() == Level.NETHER)) {
         try {
-          Constants.LOGGER.debug("Attempting to restore field 'shape' added by mod 'betternether'...");
-          this.getClass().getDeclaredField("shape").set(this, bnShape);
+          Constants.LOGGER.debug("Attempting to restore field 'bn_shape' added by mod 'betternether'...");
+          this.getClass().getDeclaredField("bn_shape").set(this, bnShape);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-          Constants.LOGGER.error("Failed to restore field 'shape' added by mod 'betternether'", e);
+          Constants.LOGGER.error("Failed to restore field 'bn_shape' added by mod 'betternether'", e);
         }
       }
     }
