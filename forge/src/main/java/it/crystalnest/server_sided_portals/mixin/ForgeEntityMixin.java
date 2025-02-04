@@ -1,5 +1,6 @@
 package it.crystalnest.server_sided_portals.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import it.crystalnest.server_sided_portals.api.CustomPortalChecker;
 import it.crystalnest.server_sided_portals.api.EntityPortal;
 import net.minecraft.resources.ResourceKey;
@@ -7,10 +8,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Objects;
 
@@ -28,15 +29,14 @@ public abstract class ForgeEntityMixin implements EntityPortal {
   public abstract Level level();
 
   /**
-   * Redirects the call to {@link Entity#level()} inside the method {@link Entity#handleNetherPortal()}.<br />
-   * Optionally changes the destination dimension.
+   * Modifies the call to {@link MinecraftServer#getLevel(ResourceKey)} inside the method {@link Entity#handleNetherPortal()}.<br>
+   * Returns the correct destination dimension.
    *
-   * @param instance {@link MinecraftServer} owning the redirected method.
-   * @param worldKey dimension key.
+   * @param original {@link ServerLevel} original destination.
    * @return correct destination dimension.
    */
-  @Redirect(method = "handleNetherPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"))
-  private ServerLevel redirectGetLevel(MinecraftServer instance, ResourceKey<Level> worldKey) {
-    return CustomPortalChecker.getPortalDestination((ServerLevel) level(), Objects.requireNonNull(instance.getLevel(worldKey)), portalEntrancePos());
+  @ModifyExpressionValue(method = "handleNetherPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"))
+  private ServerLevel redirectGetLevel(@Nullable ServerLevel original) {
+    return CustomPortalChecker.getPortalDestination((ServerLevel) level(), Objects.requireNonNull(original), portalEntrancePos());
   }
 }
