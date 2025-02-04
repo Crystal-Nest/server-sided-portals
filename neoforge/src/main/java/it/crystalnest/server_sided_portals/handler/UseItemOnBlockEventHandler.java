@@ -9,7 +9,7 @@ import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 /**
  * Handles {@link UseItemOnBlockEvent}s.
  */
-@EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Constants.MOD_ID)
 public final class UseItemOnBlockEventHandler extends ItemUseHandler {
   /**
    * Singleton instance for this event handler.

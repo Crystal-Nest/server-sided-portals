@@ -8,7 +8,8 @@
     "BaseFireBlockMixin",
     "NetherPortalBlockMixin",
     "PortalForcerMixin",
-    "PortalShapeMixin"
+    "PortalShapeMixin",
+    "TestMixin"
   ],
   "client": [],
   "server": [],
