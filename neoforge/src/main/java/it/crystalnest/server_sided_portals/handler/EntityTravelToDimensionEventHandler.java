@@ -1,4 +1,4 @@
-package it.crystalnest.server_sided_portals.handlers;
+package it.crystalnest.server_sided_portals.handler;
 
 import it.crystalnest.server_sided_portals.Constants;
 import it.crystalnest.server_sided_portals.api.CustomPortalChecker;
@@ -28,7 +28,7 @@ public final class EntityTravelToDimensionEventHandler {
   public static void handle(EntityTravelToDimensionEvent event) {
     Entity entity = event.getEntity();
     MinecraftServer server = entity.getServer();
-    if (server != null && !entity.isRemoved() && (CustomPortalChecker.isCustomDimension(entity.level().dimension()) || CustomPortalChecker.isCustomDimension(event.getDimension()))) {
+    if (server != null && !entity.isRemoved() && (CustomPortalChecker.hasCustomPortalFrame(entity.level().dimension()) || CustomPortalChecker.hasCustomPortalFrame(event.getDimension()))) {
       ((Teleportable) entity).setCustomPortalInfo(CustomPortalChecker.getCustomPortalInfo(entity, Objects.requireNonNull(server).getLevel(event.getDimension())));
     }
   }
