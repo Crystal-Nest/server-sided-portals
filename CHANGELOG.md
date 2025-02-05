@@ -47,6 +47,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 [Unreleased]: https://github.com/crystal-nest/server-sided-portals
 [README]: https://github.com/crystal-nest/server-sided-portals#readme
 
+[v2.0.1]: https://github.com/crystal-nest/server-sided-portals/releases?q=2.0.1
 [v2.0.0]: https://github.com/crystal-nest/server-sided-portals/releases?q=2.0.0
 [v1.1.1]: https://github.com/crystal-nest/server-sided-portals/releases?q=1.1.1
 [v1.1.0]: https://github.com/crystal-nest/server-sided-portals/releases?q=1.1.0
