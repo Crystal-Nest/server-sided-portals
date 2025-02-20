@@ -85,7 +85,7 @@ public abstract class PortalForcerMixin {
    * @return filtered stream of {@link PoiRecord}s that represent matching portals.
    */
   @WrapOperation(method = "findClosestPortalPosition", at = @At(value = "INVOKE", target = "Ljava/util/stream/Stream;filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;", ordinal = 1))
-  private Stream<PoiRecord> wrapFilter(Stream<PoiRecord> instance, Predicate<? super PoiRecord> predicate, Operation<Stream<PoiRecord>> original) {
-    return original.call(instance, predicate).filter(poi -> (level.dimension() != Level.OVERWORLD || CustomPortalChecker.isPortalForDimension(level, poi.getPos(), Constants.DIMENSION_ORIGIN_THREAD.get())));
+  private Stream<BlockPos> wrapFilter(Stream<BlockPos> instance, Predicate<? super BlockPos> predicate, Operation<Stream<BlockPos>> original) {
+    return original.call(instance, predicate).filter(pos -> (level.dimension() != Level.OVERWORLD || CustomPortalChecker.isPortalForDimension(level, pos, Constants.DIMENSION_ORIGIN_THREAD.get())));
   }
 }
