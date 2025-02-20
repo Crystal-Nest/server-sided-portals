@@ -9,6 +9,11 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v2.0.2] - 2025/02/20
+
+- 1.21 and above only.
+- Fixed crash when going back to the Overworld.
+
 ## [v2.0.1] - 2025/02/05
 
 - Implemented all changes from `v.2.0.0` (1.20.4 and below only).
@@ -47,6 +52,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 [Unreleased]: https://github.com/crystal-nest/server-sided-portals
 [README]: https://github.com/crystal-nest/server-sided-portals#readme
 
+[v2.0.2]: https://github.com/crystal-nest/server-sided-portals/releases?q=2.0.2
 [v2.0.1]: https://github.com/crystal-nest/server-sided-portals/releases?q=2.0.1
 [v2.0.0]: https://github.com/crystal-nest/server-sided-portals/releases?q=2.0.0
 [v1.1.1]: https://github.com/crystal-nest/server-sided-portals/releases?q=1.1.1
