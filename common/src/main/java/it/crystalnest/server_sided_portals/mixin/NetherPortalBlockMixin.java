@@ -23,8 +23,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Objects;
-
 /**
  * Injects into {@link NetherPortalBlock} to alter Custom Portals mob spawn and dimension travel.
  */
@@ -60,10 +58,7 @@ public abstract class NetherPortalBlockMixin {
    */
   @WrapOperation(method = "getPortalDestination", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"))
   private ServerLevel onGetPortalDestination(MinecraftServer instance, ResourceKey<Level> dimension, Operation<ServerLevel> original, ServerLevel level, Entity entity, BlockPos pos) {
-    if (dimension == Level.NETHER && CustomPortalChecker.isCustomPortal(level, pos)) {
-      return instance.getLevel(level.dimension() == Level.OVERWORLD ? Objects.requireNonNull(CustomPortalChecker.getPortalDimension(level, pos)) : Level.OVERWORLD);
-    }
-    return original.call(instance, dimension);
+    return instance.getLevel(CustomPortalChecker.getPortalDestination(level, pos));
   }
 
   /**
