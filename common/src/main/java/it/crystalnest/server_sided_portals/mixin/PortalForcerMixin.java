@@ -46,8 +46,14 @@ public abstract class PortalForcerMixin {
   @Unique
   private BlockState getCorrectBlockState(BlockState state) {
     if (state.is(Blocks.OBSIDIAN)) {
+      if (CustomPortalChecker.hasCustomPortalFrame(level)) {
+        return CustomPortalChecker.getCustomPortalFrameBlock(level).defaultBlockState();
+      }
       ResourceKey<Level> origin = Constants.DIMENSION_ORIGIN_THREAD.get();
-      return CustomPortalChecker.getCustomPortalFrameBlock(CustomPortalChecker.hasCustomPortalFrame(origin) ? Objects.requireNonNull(level.getServer().getLevel(origin)) : level).defaultBlockState();
+      if (CustomPortalChecker.hasCustomPortalFrame(origin)) {
+        return CustomPortalChecker.getCustomPortalFrameBlock(Objects.requireNonNull(level.getServer().getLevel(origin))).defaultBlockState();
+      }
+      return CustomPortalChecker.getCustomPortalFrameBlock(level).defaultBlockState();
     }
     return state;
   }
@@ -86,6 +92,6 @@ public abstract class PortalForcerMixin {
    */
   @WrapOperation(method = "findClosestPortalPosition", at = @At(value = "INVOKE", target = "Ljava/util/stream/Stream;filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;", ordinal = 1))
   private Stream<BlockPos> wrapFilter(Stream<BlockPos> instance, Predicate<? super BlockPos> predicate, Operation<Stream<BlockPos>> original) {
-    return original.call(instance, predicate).filter(pos -> (level.dimension() != Level.OVERWORLD || CustomPortalChecker.isPortalForDimension(level, pos, Constants.DIMENSION_ORIGIN_THREAD.get())));
+    return original.call(instance, predicate).filter(pos -> CustomPortalChecker.isPortalGoingTo(level, pos, Constants.DIMENSION_ORIGIN_THREAD.get()));
   }
 }
