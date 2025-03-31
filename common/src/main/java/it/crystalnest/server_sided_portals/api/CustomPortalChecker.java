@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.NetherPortalBlock;
 import net.minecraft.world.level.portal.PortalShape;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,17 @@ import java.util.Optional;
  */
 public interface CustomPortalChecker {
   /**
+   * Gets the {@link CustomPortalChecker} instance at the given position.
+   *
+   * @param level dimension.
+   * @param pos position.
+   * @return {@link CustomPortalChecker} instance.
+   */
+  static CustomPortalChecker getPortalChecker(Level level, BlockPos pos) {
+    return ((CustomPortalChecker) new PortalShape(level, pos, level.getBlockState(pos).getOptionalValue(NetherPortalBlock.AXIS).orElse(Axis.X)));
+  }
+
+  /**
    * Gets the Custom Dimension related to the Custom Portal at the given position.
    *
    * @param level dimension.
@@ -32,7 +44,7 @@ public interface CustomPortalChecker {
    * @return portal related dimension.
    */
   static ResourceKey<Level> getPortalDimension(Level level, BlockPos pos) {
-    return ((CustomPortalChecker) new PortalShape(level, pos, level.getBlockState(pos).getOptionalValue(NetherPortalBlock.AXIS).orElse(Axis.X))).dimension();
+    return getPortalChecker(level, pos).dimension();
   }
 
   /**
@@ -60,6 +72,42 @@ public interface CustomPortalChecker {
   }
 
   /**
+   * Gets the Custom Destination related to the Custom Portal at the given position.
+   *
+   * @param level dimension.
+   * @param pos position.
+   * @return portal related dimension.
+   */
+  static ResourceKey<Level> getPortalDestination(Level level, BlockPos pos) {
+    return getPortalChecker(level, pos).destination();
+  }
+
+
+  /**
+   * Checks whether the Portal at the given position is directed to the given dimension.
+   *
+   * @param level current dimension.
+   * @param pos position.
+   * @param dimension target dimension.
+   * @return whether the Portal at the given position is directed to the given dimension.
+   */
+  static boolean isPortalGoingTo(Level level, BlockPos pos, ResourceKey<Level> dimension) {
+    return getPortalDestination(level, pos) == dimension;
+  }
+
+  /**
+   * Checks whether the Portal at the given position is directed to the specified dimension.
+   *
+   * @param level current dimension.
+   * @param pos position.
+   * @param dimension name of the target dimension.
+   * @return whether the Portal at the given position is directed to the specified dimension.
+   */
+  static boolean isPortalGoingTo(Level level, BlockPos pos, ResourceLocation dimension) {
+    return getPortalDestination(level, pos).location().equals(dimension);
+  }
+
+  /**
    * Checks whether there is a Custom Portal in the given dimension at the given position.
    *
    * @param level dimension.
@@ -73,11 +121,11 @@ public interface CustomPortalChecker {
   /**
    * Returns the list of dimensions with a Custom Portal Frame.
    *
-   * @param server {@link ServerLevel}.
+   * @param level {@link ServerLevel}.
    * @return the list of dimensions with a Custom Portal Frame.
    */
-  static List<ResourceKey<Level>> getDimensionsWithCustomPortal(ServerLevel server) {
-    return server.getServer().levelKeys().stream().filter(CustomPortalChecker::hasCustomPortalFrame).toList();
+  static List<ResourceKey<Level>> getDimensionsWithCustomPortal(ServerLevel level) {
+    return level.getServer().levelKeys().stream().filter(CustomPortalChecker::hasCustomPortalFrame).toList();
   }
 
   /**
@@ -166,4 +214,21 @@ public interface CustomPortalChecker {
    * @return portal dimension.
    */
   ResourceKey<Level> dimension();
+
+  /**
+   * Custom Portal destination.
+   *
+   * @return portal destination.
+   */
+  ResourceKey<Level> destination();
+
+  /**
+   * Sets the dimension related to this portal.<br>
+   * Internal use only, calling this outside or after the portal initialization will result in an {@link IllegalStateException}.
+   *
+   * @param destination dimension.
+   * @throws IllegalStateException if called after initialization.
+   */
+  @ApiStatus.Internal
+  void setInfos(ResourceKey<Level> dimension, ResourceKey<Level> destination) throws IllegalStateException;
 }
