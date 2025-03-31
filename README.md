@@ -78,7 +78,7 @@ There are also a bunch of useful utility methods available, for which you can ch
 ## **License and right of use**
 
 Feel free to use this mod for any modpack or video, just be sure to give credit and possibly link [here](https://github.com/crystal-nest/server-sided-portals#readme).  
-This project is published under the [GNU General Public License v3.0](https://github.com/crystal-nest/server-sided-portals/blob/master/LICENSE).
+This project is published under the [Crystal Nest Community License v1](https://github.com/crystal-nest/server-sided-portals/blob/master/LICENSE).
 
 ## **Support us**
 
