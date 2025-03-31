@@ -46,8 +46,14 @@ public abstract class PortalForcerMixin {
   @Unique
   private BlockState getCorrectBlockState(BlockState state) {
     if (state.is(Blocks.OBSIDIAN)) {
+      if (CustomPortalChecker.hasCustomPortalFrame(level)) {
+        return CustomPortalChecker.getCustomPortalFrameBlock(level).defaultBlockState();
+      }
       ResourceKey<Level> origin = Constants.DIMENSION_ORIGIN_THREAD.get();
-      return CustomPortalChecker.getCustomPortalFrameBlock(CustomPortalChecker.hasCustomPortalFrame(origin) ? Objects.requireNonNull(level.getServer().getLevel(origin)) : level).defaultBlockState();
+      if (CustomPortalChecker.hasCustomPortalFrame(origin)) {
+        return CustomPortalChecker.getCustomPortalFrameBlock(Objects.requireNonNull(level.getServer().getLevel(origin))).defaultBlockState();
+      }
+      return CustomPortalChecker.getCustomPortalFrameBlock(level).defaultBlockState();
     }
     return state;
   }
@@ -60,7 +66,7 @@ public abstract class PortalForcerMixin {
    * @return whether the {@link BlockState} has been set in the {@link ServerLevel}.
    */
   @ModifyArg(method = "createPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"), index = 1)
-  private BlockState redirectSetBlockStateNoFlags$createPortal(BlockState state) {
+  private BlockState modifySetBlockStateNoFlags$createPortal(BlockState state) {
     return getCorrectBlockState(state);
   }
 
@@ -72,7 +78,7 @@ public abstract class PortalForcerMixin {
    * @return whether the {@link BlockState} has been set in the {@link ServerLevel}.
    */
   @ModifyArg(method = "createPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 0), index = 1)
-  private BlockState redirectSetBlockStateWithFlags$createPortal(BlockState state) {
+  private BlockState modifyArgSetBlockStateWithFlags$createPortal(BlockState state) {
     return getCorrectBlockState(state);
   }
 
@@ -85,7 +91,7 @@ public abstract class PortalForcerMixin {
    * @return filtered stream of {@link PoiRecord}s that represent matching portals.
    */
   @WrapOperation(method = "findPortalAround", at = @At(value = "INVOKE", target = "Ljava/util/stream/Stream;filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;", ordinal = 1))
-  private Stream<PoiRecord> redirectFilter(Stream<PoiRecord> instance, Predicate<? super PoiRecord> predicate, Operation<Stream<PoiRecord>> original) {
-    return original.call(instance, predicate).filter(poi -> (level.dimension() != Level.OVERWORLD || CustomPortalChecker.isPortalForDimension(level, poi.getPos(), Constants.DIMENSION_ORIGIN_THREAD.get())));
+  private Stream<PoiRecord> wrapFilter(Stream<PoiRecord> instance, Predicate<? super PoiRecord> predicate, Operation<Stream<PoiRecord>> original) {
+    return original.call(instance, predicate).filter(poi -> CustomPortalChecker.isPortalGoingTo(level, poi.getPos(), Constants.DIMENSION_ORIGIN_THREAD.get()));
   }
 }
