@@ -50,7 +50,7 @@ Making use of this mod with a datapack is easy! Just follow these simple steps:
 That's it! Load your datapack alongside this mod, and your dimensions and portals are ready to use.  
 You're free to add multiple dimensions, each with unique portal frames and igniters!
 
-Starting with version **2.1.0**, you can further customize your dimensions by setting specific gamemodes for players entering them or defining custom entry points other than the Overworld.  
+Since **v2.1.0**, you can further customize your dimensions by setting specific gamemodes for players entering them or defining custom entry points other than the Overworld.  
 Check out the [Wiki](https://github.com/Crystal-Nest/server-sided-portals/wiki) for details.
 
 ### 🛠️ Mod
