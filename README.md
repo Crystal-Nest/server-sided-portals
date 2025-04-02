@@ -12,7 +12,7 @@
 
 ---
 
-## **Description**
+## 📝 **Description**
 
 This is a mod API that provides easily customizable and server-sided portals to any custom dimension.  
 This mod is required server side only, and is thus compatible with any client, Vanilla included.  
@@ -20,46 +20,53 @@ This mod can be used as a dependency for another mod/datapack, or bundled in a m
 
 Check out the usage details below or on the [Wiki](https://github.com/Crystal-Nest/server-sided-portals/wiki)!
 
-## **Features**
+## ✨ **Features**
 
-- Allows the creation of portals with a custom frame that are linked for a specific dimension.
-- Choose the frame blocks simply with a block tag! Multiple blocks are allowed.
-- Optionally, choose the item that can light up the portal simply with an item tag! Multiple items are allowed.
-- Required only server side!
-- It's possible to add portals for already existing dimensions (e.g. added by other mods)!
-- Fully compatible with both modded and Vanilla clients.
-- Easy to use with either a mod or a datapack.
+- 🔮 **Custom Portals**: Create portals with fully customizable frames linked to any dimension.
+- 🧱 **Flexible Frame Design**: Define valid frame blocks using block tags — supports multiple block types!
+- 🔥 **Custom Igniters**: Choose which items can light the portal using item tags — supports multiple items!
+- 🖥️ **Server-Side Only**: No need to install the mod on clients — works entirely server-side.
+- 🌍 **Cross-Dimension Support**: Add portals to *any* dimension, even ones added by other mods.
+- ✅ **Fully Compatible**: Works seamlessly with both Vanilla and modded clients.
+- 🧩 **Mod & Datapack Friendly**: Simple integration whether you're using a datapack or developing a mod.
+- 📚 **Comprehensive Wiki**: Check out the [Wiki](https://github.com/Crystal-Nest/server-sided-portals/wiki) for guides, examples, and more features!
 
-## **Usage**
+## 🚀 **Usage**
 
-You can find up-to-date examples for both a datapack and a mod on the [Wiki](https://github.com/Crystal-Nest/server-sided-portals/wiki/Working-examples).
+For detailed examples, check out the [Wiki](https://github.com/Crystal-Nest/server-sided-portals/wiki/Working-examples).  
+There, you'll find step-by-step guides for creating custom dimensions, portal frames, igniters, and additional tweaks!
 
-### Datapack
+### 📦 Datapack
 
-It's very easy to make use of this mod API with a custom datapack:
+Making use of this mod with a datapack is easy! Just follow these simple steps:
 
-1. Create a datapack following [this tutorial](https://minecraft.wiki/w/Tutorials/Creating_a_data_pack).
-2. Create a custom dimension type with [this generator](https://misode.github.io/dimension-type/).
-3. Create a custom dimension with [this generator](https://misode.github.io/dimension/).
-4. Create a custom block tag for the portal frame. You can add multiple blocks and other block tags too!  
-   The tag name needs to be `dimension_portal_frame` (where `dimension` is the dimension name).
-5. Optionally, create a custom item tag for the portal igniter item(s). You can add multiple items and other item tags too!  
-   The tag name needs to be `dimension_portal_igniter` (where `dimension` is the dimension name).
-6. Make sure all the JSON files you created in the previous steps are located under the same namespace.
+1. **Set up a datapack**: Start by creating a datapack following [this Minecraft tutorial](https://minecraft.wiki/w/Tutorials/Creating_a_data_pack).
+2. **Define a dimension Type**: Generate a custom dimension type with [this generator](https://misode.github.io/dimension-type/).
+3. **Create your dimension**: Use [this generator](https://misode.github.io/dimension/) to set up your custom dimension.
+4. **Specify portal frame blocks**: Create a block tag called `dimension_portal_frame`, replacing `dimension` with your dimension name. You can include multiple blocks or even other tags!
+5. **(Optional) Choose portal igniters**: Optionally create an item tag named `dimension_portal_igniter`, replacing `dimension` with your dimension name, for items that can ignite the portal. You can also use multiple items or tags.
+6. **Organize your files**: Make sure all JSON files from the above steps are under the same namespace.
 
-That's it! When the datapack is loaded along with this mod, all dimensions will be loaded, and it'll be possible to create portals with the specified frame blocks!  
-It goes without saying that you can also add multiple dimensions, each with its own custom portal frame and (optionally) igniter definitions.
+That's it! Load your datapack alongside this mod, and your dimensions and portals are ready to use.  
+You're free to add multiple dimensions, each with unique portal frames and igniters!
 
-### Mod
+Starting with version **2.1.0**, you can further customize your dimensions by setting specific gamemodes for players entering them or defining custom entry points other than the Overworld.  
+Check out the [Wiki](https://github.com/Crystal-Nest/server-sided-portals/wiki) for details.
 
-Making a mod that leverages this API is simple.  
-Follow the instructions in the datapack section above, but put the files under `resources/data/mod_id/`.  
-If you'd rather have the SSP-related datapack toggleable by the user, you can leverage [Cobweb static datapack API](https://github.com/Crystal-Nest/cobweb/wiki/Common-API#static--dynamic-resource-packs).  
-Making a mod rather than a datapack might be useful for adding extra functionality regarding your dimension.
+### 🛠️ Mod
 
-There are also a bunch of useful utility methods available, for which you can check out the Javadoc for more details.
+Integrating this API into your mod is straightforward:
 
-## **Compatibilities**
+- Follow the steps outlined in the Datapack section above.
+- Instead of placing files in a datapack, place them under your mod's resource folder: `resources/data/mod_id/`.
+
+If you prefer giving users the choice to enable or disable your datapack, consider using [Cobweb static datapack API](https://github.com/Crystal-Nest/cobweb/wiki/Common-API#static--dynamic-resource-packs).
+
+Creating a mod (rather than a datapack) allows you to add extra functionality and enhance your custom dimensions further.
+
+Additionally, this API provides several helpful utility methods. Explore the Javadoc for detailed documentation on these methods.
+
+## 🔄 **Compatibilities**
 
 | Mod                                                            | Loader |                                                         Compatibility                                                          |
 |:---------------------------------------------------------------|:------:|:------------------------------------------------------------------------------------------------------------------------------:|
@@ -69,18 +76,18 @@ There are also a bunch of useful utility methods available, for which you can ch
 | [Very Many Players](https://modrinth.com/mod/vmp-fabric)       | Fabric |                                           Compatible with `use_async_portals=false`                                            |
 | [Canary](https://modrinth.com/mod/canary)                      | Forge  | Compatible with [fast portals](https://github.com/AbdElAziz333/Canary/wiki/Configuration-File#mixinaipoifast_portals) disabled |
 
-## **Dependencies**
+## 🔗 **Dependencies**
 
 | Mod                                       | Loader | Requirement |
 |:------------------------------------------|:------:|:-----------:|
 | [Cobweb](https://modrinth.com/mod/cobweb) |  All   |  Required   |
 
-## **License and right of use**
+## 📜 **License and right of use**
 
 Feel free to use this mod for any modpack or video, just be sure to give credit and possibly link [here](https://github.com/crystal-nest/server-sided-portals#readme).  
 This project is published under the [GNU General Public License v3.0](https://github.com/crystal-nest/server-sided-portals/blob/master/LICENSE).
 
-## **Support us**
+## ❤️ **Support us**
 
 <a href="https://crystalnest.it"><img alt="Crystal Nest Website" src="https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/crystal-nest/pic512.png" width="14.286%"></a><a href="https://discord.gg/BP6EdBfAmt"><img alt="Discord" src="https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/discord/discord512.png" width="14.286%"></a><a href="https://www.patreon.com/crystalspider"><img alt="Patreon" src="https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/patreon/patreon512.png" width="14.286%"></a><a href="https://ko-fi.com/crystalspider"><img alt="Ko-fi" src="https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/kofi/kofi512.png" width="14.286%"></a><a href="https://github.com/Crystal-Nest"><img alt="Our other projects" src="https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/github/github512.png" width="14.286%"><a href="https://modrinth.com/organization/crystal-nest"><img alt="Modrinth" src="https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/modrinth/modrinth512.png" width="14.286%"></a><a href="https://www.curseforge.com/members/crystalspider/projects"><img alt="CurseForge" src="https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/curseforge/curseforge512.png" width="14.286%"></a>
 
