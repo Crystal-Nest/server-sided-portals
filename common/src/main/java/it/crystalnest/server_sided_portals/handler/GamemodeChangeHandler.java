@@ -21,7 +21,7 @@ public abstract class GamemodeChangeHandler {
     DimensionTweak dimensionTweak = Constants.DIMENSION_TWEAKS.get(dimension);
     if (dimensionTweak != null) {
       for (GamemodeTweak tweak : dimensionTweak.gamemodes()) {
-        if (tweak.whitelist() == (player.getPermissionLevel() >= tweak.permission() || tweak.profiles().stream().anyMatch(profile -> player.getStringUUID().equalsIgnoreCase(profile)))) {
+        if (tweak.whitelist() == (player.server.getProfilePermissions(player.getGameProfile()) >= tweak.permission() || tweak.profiles().stream().anyMatch(profile -> player.getStringUUID().equalsIgnoreCase(profile)))) {
           player.setGameMode(tweak.gamemode());
           break;
         }
