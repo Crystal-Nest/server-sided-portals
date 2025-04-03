@@ -2,7 +2,6 @@ package it.crystalnest.server_sided_portals.handler;
 
 import it.crystalnest.server_sided_portals.Constants;
 import it.crystalnest.server_sided_portals.api.DimensionTweak;
-import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -17,7 +16,7 @@ import java.util.Map;
  */
 public class CommonResourceReloadListener extends SimpleJsonResourceReloadListener<List<DimensionTweak>> {
   protected CommonResourceReloadListener() {
-    super(DimensionTweak.CODEC.listOf(), FileToIdConverter.json(Constants.DIMENSION_TWEAKS_ID.getPath()));
+    super(DimensionTweak.CODEC.listOf(), Constants.DIMENSION_TWEAKS_ID.getPath());
   }
 
   @Override
