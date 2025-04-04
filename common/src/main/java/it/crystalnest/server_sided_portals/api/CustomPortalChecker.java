@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.NetherPortalBlock;
 import net.minecraft.world.level.portal.PortalShape;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -81,7 +80,6 @@ public interface CustomPortalChecker {
   static ResourceKey<Level> getPortalDestination(Level level, BlockPos pos) {
     return getPortalChecker(level, pos).destination();
   }
-
 
   /**
    * Checks whether the Portal at the given position is directed to the given dimension.
@@ -221,14 +219,4 @@ public interface CustomPortalChecker {
    * @return portal destination.
    */
   ResourceKey<Level> destination();
-
-  /**
-   * Sets the dimension related to this portal.<br>
-   * Internal use only, calling this outside or after the portal initialization will result in an {@link IllegalStateException}.
-   *
-   * @param destination dimension.
-   * @throws IllegalStateException if called after initialization.
-   */
-  @ApiStatus.Internal
-  void setInfos(ResourceKey<Level> dimension, ResourceKey<Level> destination) throws IllegalStateException;
 }

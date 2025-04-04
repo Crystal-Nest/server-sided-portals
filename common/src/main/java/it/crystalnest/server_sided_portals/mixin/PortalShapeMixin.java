@@ -2,6 +2,7 @@ package it.crystalnest.server_sided_portals.mixin;
 
 import it.crystalnest.server_sided_portals.Constants;
 import it.crystalnest.server_sided_portals.api.CustomPortalChecker;
+import it.crystalnest.server_sided_portals.api.DimensionTweak;
 import it.crystalnest.server_sided_portals.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -75,11 +76,18 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
   private int height;
 
   /**
-   * Related Custom Dimension.<br/>
-   * Defaults to the {@link Level#NETHER Nether}.
+   * Related Custom Dimension.<br>
+   * Defaults to the {@link Level#OVERWORLD Overworld}.
    */
   @Unique
-  private ResourceKey<Level> dimension = Level.NETHER;
+  private ResourceKey<Level> destination = Level.OVERWORLD;
+
+  /**
+   * Related Custom Destination.<br>
+   * Defaults to the {@link Level#OVERWORLD Overworld}.
+   */
+  @Unique
+  private ResourceKey<Level> dimension = Level.OVERWORLD;
 
   /**
    * Shadowed {@link PortalShape#isEmpty(BlockState)}.
@@ -113,6 +121,11 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
     return dimension;
   }
 
+  @Override
+  public ResourceKey<Level> destination() {
+    return destination;
+  }
+
   /**
    * Injects at the end of the constructor.<br>
    * Checks if a Custom Portal can be created.
@@ -124,7 +137,7 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
    */
   @Inject(method = "<init>(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction$Axis;)V", at = @At(value = "TAIL"))
   private void onInit(LevelAccessor level, BlockPos pos, Axis axis, CallbackInfo ci) {
-    if (!level.isClientSide()) {
+    if (level instanceof ServerLevel serverLevel) {
       Object bnShape = null;
       if (Services.PLATFORM.isModLoaded("betternether")) {
         // Try to circumvent incompatibility with BetterNether.
@@ -140,24 +153,31 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
           }
         }
       }
-      ServerLevel serverLevel = (ServerLevel) level;
-      if (this.isValid() && CustomPortalChecker.hasCustomPortalFrame(serverLevel)) {
-        // If it's a Nether Portal, and we are in a Custom Dimension, prevent creating the portal.
-        this.bottomLeft = null;
-        this.setWidth(1);
-        height = 1;
-      } else if (!isValid() && (serverLevel.dimension() == Level.OVERWORLD || CustomPortalChecker.hasCustomPortalFrame(serverLevel))) {
-        // If it's not a Nether Portal, and we are either in the Overworld or in a Custom Dimension, check whether it's a Custom Portal.
+      if (isValid()) {
+        // If it's a Nether Portal, check if we are in the Nether or the Nether is connected to the Current Dimension.
+        DimensionTweak tweak = Constants.getTweak(Level.NETHER);
+        if (serverLevel.dimension() == Level.NETHER || tweak.connection() == serverLevel.dimension()) {
+          dimension = Level.NETHER;
+          destination = serverLevel.dimension() == Level.NETHER ? tweak.connection() : Level.NETHER;
+        } else {
+          // Otherwise, prevent creating the portal.
+          this.bottomLeft = null;
+          this.setWidth(1);
+          height = 1;
+        }
+      } else {
+        // If it's not a Nether Portal, check whether it's a Custom Portal.
         for (ResourceKey<Level> dim : CustomPortalChecker.getDimensionsWithCustomPortal(serverLevel)) {
-          // A Custom Portal can light up only in the Overworld or in the Custom Dimension it is for.
-          if (serverLevel.dimension() == Level.OVERWORLD || dim == serverLevel.dimension()) {
+          // A Custom Portal can light up only in the Custom Dimension it is for or in its Connection Dimension.
+          if (dim == serverLevel.dimension() || serverLevel.dimension() == Constants.getTweak(dim).connection()) {
             TagKey<Block> frameBlock = CustomPortalChecker.getCustomPortalFrameTag(dim);
             bottomLeft = calculateBottomLeftForCustomDimension(pos, frameBlock);
             if (bottomLeft != null) {
               setWidth(calculateWidthForCustomDimension(frameBlock));
               if (width > 0) {
                 height = calculateHeightForCustomDimension(frameBlock);
-                this.dimension = dim;
+                dimension = dim;
+                destination = serverLevel.dimension() == dim ? Constants.getTweak(dim).connection() : dim;
                 // The first Custom Dimension to match breaks the loop and validates the Custom Portal.
                 break;
               }
