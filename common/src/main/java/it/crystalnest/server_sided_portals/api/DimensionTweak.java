@@ -1,8 +1,5 @@
 package it.crystalnest.server_sided_portals.api;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
@@ -13,19 +10,20 @@ import java.util.List;
  *
  * @param dimension dimension it's for.
  * @param connection dimension to be connected to.
- * @param gamemodes list of gamemode tweaks.
+ * @param gamemode list of type tweaks.
  */
-public record DimensionTweak(ResourceKey<Level> dimension, ResourceKey<Level> connection, List<GamemodeTweak> gamemodes) {
-  public static final Codec<DimensionTweak> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-    ResourceKey.codec(Registries.DIMENSION).fieldOf("dimension").forGetter(DimensionTweak::dimension),
-    // Portals of the specified dimension will activate only within the connection dimension or within the specified dimension itself; in the latter case, they will lead back to the connection dimension.
-    ResourceKey.codec(Registries.DIMENSION).optionalFieldOf("connection", Level.OVERWORLD).forGetter(DimensionTweak::connection),
-    GamemodeTweak.CODEC.listOf().optionalFieldOf("gamemode", List.of()).forGetter(DimensionTweak::gamemodes)
-  ).apply(instance, DimensionTweak::new));
+public record DimensionTweak(ResourceKey<Level> dimension, ResourceKey<Level> connection, List<GamemodeTweak> gamemode) {
+  /**
+   * Default dimension tweak connected to the Overworld.
+   */
+  public static final DimensionTweak OVERWORLD_CONNECTION = new DimensionTweak(null, Level.OVERWORLD, List.of());
 
-  public static final DimensionTweak OVERWORLD_CONNECTION = new DimensionTweak(Level.OVERWORLD);
-
-  public DimensionTweak(ResourceKey<Level> connection) {
-    this(null, connection, List.of());
+  public DimensionTweak {
+    if (connection == null) {
+      connection = Level.OVERWORLD;
+    }
+    if (gamemode == null) {
+      gamemode = List.of();
+    }
   }
 }

@@ -89,7 +89,6 @@ public interface CustomPortalChecker {
     return getPortalChecker(level, pos).destination();
   }
 
-
   /**
    * Checks whether the Portal at the given position is directed to the given dimension.
    *
@@ -268,14 +267,4 @@ public interface CustomPortalChecker {
    * @return portal destination.
    */
   ResourceKey<Level> destination();
-
-  /**
-   * Sets the dimension related to this portal.<br>
-   * Internal use only, calling this outside or after the portal initialization will result in an {@link IllegalStateException}.
-   *
-   * @param destination dimension.
-   * @throws IllegalStateException if called after initialization.
-   */
-  @ApiStatus.Internal
-  void setInfos(ResourceKey<Level> dimension, ResourceKey<Level> destination) throws IllegalStateException;
 }
