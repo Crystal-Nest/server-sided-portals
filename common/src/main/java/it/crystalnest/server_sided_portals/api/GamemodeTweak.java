@@ -1,25 +1,40 @@
 package it.crystalnest.server_sided_portals.api;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.commands.Commands;
 import net.minecraft.world.level.GameType;
 
+import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Tweak for changing players' gamemode when entering a dimension.
+ * Tweak for changing players' type when entering a dimension.
  *
- * @param gamemode gamemode change.
+ * @param type type change.
  * @param permission permission level.
- * @param profiles list of UUIDs.
+ * @param players list of UUIDs.
  * @param whitelist whether to use this tweak as a whitelist.
  */
-public record GamemodeTweak(GameType gamemode, int permission, List<String> profiles, boolean whitelist) {
-  public static final Codec<GamemodeTweak> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-    GameType.CODEC.fieldOf("type").forGetter(GamemodeTweak::gamemode),
-    Codec.INT.optionalFieldOf("permission", Commands.LEVEL_OWNERS + 1).forGetter(GamemodeTweak::permission),
-    Codec.STRING.listOf().optionalFieldOf("players", List.of()).forGetter(GamemodeTweak::profiles),
-    Codec.BOOL.optionalFieldOf("whitelist", false).forGetter(GamemodeTweak::whitelist)
-  ).apply(instance, GamemodeTweak::new));
+public record GamemodeTweak(GameType type, int permission, List<String> players, boolean whitelist) {
+  /**
+   * {@link GamemodeTweak} {@link JsonDeserializer}.
+   */
+  public static class Deserializer implements JsonDeserializer<GamemodeTweak> {
+    @Override
+    public GamemodeTweak deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      JsonObject object = json.getAsJsonObject();
+      return new GamemodeTweak(
+        GameType.byName(object.get("type").getAsString()),
+        object.has("permission") ? object.get("permission").getAsInt() : Commands.LEVEL_OWNERS + 1,
+        object.has("players") ? context.deserialize(object.get("players"), new TypeToken<List<String>>() {}.getType()) : Collections.emptyList(),
+        object.has("whitelist") && object.get("whitelist").getAsBoolean()
+      );
+    }
+  }
 }

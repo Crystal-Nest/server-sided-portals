@@ -8,11 +8,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
 /**
- * Handler for dimension travel events related to gamemode changes.
+ * Handler for dimension travel events related to type changes.
  */
 public abstract class GamemodeChangeHandler {
   /**
-   * Handles a player travelling to a dimension by optionally changing its gamemode.
+   * Handles a player travelling to a dimension by optionally changing its type.
    *
    * @param player player travelling.
    * @param dimension destination dimension.
@@ -20,9 +20,9 @@ public abstract class GamemodeChangeHandler {
   protected void handle(ServerPlayer player, ResourceKey<Level> dimension) {
     DimensionTweak dimensionTweak = Constants.DIMENSION_TWEAKS.get(dimension);
     if (dimensionTweak != null) {
-      for (GamemodeTweak tweak : dimensionTweak.gamemodes()) {
-        if (tweak.whitelist() == (player.server.getProfilePermissions(player.getGameProfile()) >= tweak.permission() || tweak.profiles().stream().anyMatch(profile -> player.getStringUUID().equalsIgnoreCase(profile)))) {
-          player.setGameMode(tweak.gamemode());
+      for (GamemodeTweak tweak : dimensionTweak.gamemode()) {
+        if (tweak.whitelist() == (player.server.getProfilePermissions(player.getGameProfile()) >= tweak.permission() || tweak.players().stream().anyMatch(profile -> player.getStringUUID().equalsIgnoreCase(profile)))) {
+          player.setGameMode(tweak.type());
           break;
         }
       }
