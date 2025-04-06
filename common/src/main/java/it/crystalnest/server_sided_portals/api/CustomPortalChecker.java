@@ -25,7 +25,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -218,15 +217,11 @@ public interface CustomPortalChecker {
    * Returns the correct portal destination.
    *
    * @param origin current dimension.
-   * @param destination default destination dimension.
    * @param pos entrance position.
    * @return the correct dimension the entity should travel to.
    */
-  static ServerLevel getPortalDestination(ServerLevel origin, ServerLevel destination, BlockPos pos) {
-    if (destination.dimension() == Level.NETHER && CustomPortalChecker.isCustomPortal(origin, pos)) {
-      return origin.getServer().getLevel(origin.dimension() == Level.OVERWORLD ? Objects.requireNonNull(CustomPortalChecker.getPortalDimension(origin, pos)) : Level.OVERWORLD);
-    }
-    return destination;
+  static ServerLevel getActualPortalDestination(ServerLevel origin, BlockPos pos) {
+    return origin.getServer().getLevel(CustomPortalChecker.getPortalDestination(origin, pos));
   }
 
   /**
