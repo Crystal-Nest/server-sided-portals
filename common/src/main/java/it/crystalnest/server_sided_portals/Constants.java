@@ -41,6 +41,8 @@ public final class Constants {
    */
   public static final Map<ResourceKey<Level>, DimensionTweak> DIMENSION_TWEAKS = new HashMap<>();
 
+  private Constants() {}
+
   /**
    * Returns the dimension tweak for the given dimension.<br>
    * Returns a default value if no dimension tweak was specified for the given dimension.
@@ -51,6 +53,4 @@ public final class Constants {
   public static DimensionTweak getTweak(ResourceKey<Level> dimension) {
     return Constants.DIMENSION_TWEAKS.getOrDefault(dimension, DimensionTweak.OVERWORLD_CONNECTION);
   }
-
-  private Constants() {}
 }

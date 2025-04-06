@@ -1,8 +1,6 @@
 package it.crystalnest.server_sided_portals.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import it.crystalnest.server_sided_portals.Constants;
 import it.crystalnest.server_sided_portals.api.CustomPortalChecker;
 import net.minecraft.core.BlockPos;
@@ -21,6 +19,7 @@ import net.minecraft.world.level.portal.TeleportTransition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
@@ -56,8 +55,8 @@ public abstract class NetherPortalBlockMixin {
    * @param pos entrance position.
    * @return the correct dimension the entity should travel to.
    */
-  @WrapOperation(method = "getPortalDestination", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"))
-  private ServerLevel onGetPortalDestination(MinecraftServer instance, ResourceKey<Level> dimension, Operation<ServerLevel> original, ServerLevel level, Entity entity, BlockPos pos) {
+  @Redirect(method = "getPortalDestination", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"))
+  private ServerLevel onGetPortalDestination(MinecraftServer instance, ResourceKey<Level> dimension, ServerLevel level, Entity entity, BlockPos pos) {
     return instance.getLevel(CustomPortalChecker.getPortalDestination(level, pos));
   }
 
