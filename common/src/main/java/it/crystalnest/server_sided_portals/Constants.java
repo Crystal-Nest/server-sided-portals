@@ -34,7 +34,7 @@ public final class Constants {
   /**
    * {@link ResourceLocation} of possible dimension tweaks.
    */
-  public static final ResourceLocation DIMENSION_TWEAKS_ID = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "tweaks");
+  public static final ResourceLocation DIMENSION_TWEAKS_ID = new ResourceLocation(Constants.MOD_ID, "tweaks");
 
   /**
    * Loaded dimension tweaks.
