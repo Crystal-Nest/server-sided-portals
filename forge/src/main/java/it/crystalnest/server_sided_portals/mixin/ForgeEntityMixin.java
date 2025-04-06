@@ -13,8 +13,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-import java.util.Objects;
-
 /**
  * Injects into {@link Entity} to alter dimension travel.
  */
@@ -37,6 +35,6 @@ public abstract class ForgeEntityMixin implements EntityPortal {
    */
   @ModifyExpressionValue(method = "handleNetherPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getLevel(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/server/level/ServerLevel;"))
   private ServerLevel redirectGetLevel(@Nullable ServerLevel original) {
-    return CustomPortalChecker.getPortalDestination((ServerLevel) level(), Objects.requireNonNull(original), portalEntrancePos());
+    return CustomPortalChecker.getActualPortalDestination((ServerLevel) level(), portalEntrancePos());
   }
 }
