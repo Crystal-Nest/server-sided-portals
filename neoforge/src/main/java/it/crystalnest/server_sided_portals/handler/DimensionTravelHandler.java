@@ -10,13 +10,13 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
  * Handles {@link PlayerEvent.PlayerChangedDimensionEvent}s.
  */
 @EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
-public final class EntityTravelToDimensionEventHandler extends GamemodeChangeHandler {
+public final class DimensionTravelHandler extends GamemodeChangeHandler {
   /**
    * Singleton instance for this event handler.
    */
-  private static final EntityTravelToDimensionEventHandler INSTANCE = new EntityTravelToDimensionEventHandler();
+  private static final DimensionTravelHandler INSTANCE = new DimensionTravelHandler();
 
-  private EntityTravelToDimensionEventHandler() {}
+  private DimensionTravelHandler() {}
 
   /**
    * Handles the {@link PlayerEvent.PlayerChangedDimensionEvent}.
