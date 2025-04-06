@@ -16,6 +16,9 @@ import java.util.List;
  * @param whitelist whether to use this tweak as a whitelist.
  */
 public record GamemodeTweak(GameType gamemode, int permission, List<String> profiles, boolean whitelist) {
+  /**
+   * {@link GamemodeTweak} {@link Codec}.
+   */
   public static final Codec<GamemodeTweak> CODEC = RecordCodecBuilder.create(instance -> instance.group(
     GameType.CODEC.fieldOf("type").forGetter(GamemodeTweak::gamemode),
     Codec.INT.optionalFieldOf("permission", Commands.LEVEL_OWNERS + 1).forGetter(GamemodeTweak::permission),
