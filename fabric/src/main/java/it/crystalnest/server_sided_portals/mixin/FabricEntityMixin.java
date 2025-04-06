@@ -37,7 +37,7 @@ public abstract class FabricEntityMixin {
   @SuppressWarnings("UnstableApiUsage")
   @WrapOperation(method = "handleNetherPortal", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;changeDimension(Lnet/minecraft/server/level/ServerLevel;)Lnet/minecraft/world/entity/Entity;"))
   private Entity redirectChangeDimension(Entity instance, ServerLevel destination, Operation<Entity> original) {
-    ServerLevel actualDestination = CustomPortalChecker.getPortalDestination((ServerLevel) instance.level(), destination, portalEntrancePos);
+    ServerLevel actualDestination = CustomPortalChecker.getActualPortalDestination((ServerLevel) instance.level(), portalEntrancePos);
     if (!instance.level().isClientSide && !instance.isRemoved() && CustomPortalChecker.isCustomPortal(instance.level(), portalEntrancePos)) {
       ((Teleportable) this).fabric_setCustomTeleportTarget(CustomPortalChecker.getCustomPortalInfo(instance, actualDestination));
     }

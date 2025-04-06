@@ -67,7 +67,7 @@ public class CommonResourceReloadListener extends SimpleJsonResourceReloadListen
   public static class ResourceKeyDeserializer implements JsonDeserializer<ResourceKey<Level>> {
     @Override
     public ResourceKey<Level> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-      return ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(json.getAsString()));
+      return ResourceKey.create(Registries.DIMENSION, new ResourceLocation(json.getAsString()));
     }
   }
 }

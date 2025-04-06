@@ -4,20 +4,26 @@ import it.crystalnest.server_sided_portals.Constants;
 import it.crystalnest.server_sided_portals.api.CustomPortalChecker;
 import it.crystalnest.server_sided_portals.api.Teleportable;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Objects;
 
 /**
  * {@link EntityTravelToDimensionEvent} handler.
  */
-@EventBusSubscriber(modid = Constants.MOD_ID, bus = Bus.FORGE)
-public final class EntityTravelToDimensionEventHandler {
-  private EntityTravelToDimensionEventHandler() {}
+@Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+public final class DimensionTravelHandler extends GamemodeChangeHandler {
+  /**
+   * Singleton instance for this event handler.
+   */
+  private static final DimensionTravelHandler INSTANCE = new DimensionTravelHandler();
+
+  private DimensionTravelHandler() {}
 
   /**
    * Handles the {@link EntityTravelToDimensionEvent} by optionally setting the custom portal info for the entity.
@@ -30,6 +36,18 @@ public final class EntityTravelToDimensionEventHandler {
     MinecraftServer server = entity.getServer();
     if (server != null && !entity.isRemoved() && (CustomPortalChecker.hasCustomPortalFrame(entity.level().dimension()) || CustomPortalChecker.hasCustomPortalFrame(event.getDimension()))) {
       ((Teleportable) entity).setCustomPortalInfo(CustomPortalChecker.getCustomPortalInfo(entity, Objects.requireNonNull(server).getLevel(event.getDimension())));
+    }
+  }
+
+  /**
+   * Handles the {@link PlayerEvent.PlayerChangedDimensionEvent}.
+   *
+   * @param event {@link PlayerEvent.PlayerChangedDimensionEvent}.
+   */
+  @SubscribeEvent
+  public static void handle(PlayerEvent.PlayerChangedDimensionEvent event) {
+    if (event.getEntity() instanceof ServerPlayer player) {
+      INSTANCE.handle(player, event.getTo());
     }
   }
 }

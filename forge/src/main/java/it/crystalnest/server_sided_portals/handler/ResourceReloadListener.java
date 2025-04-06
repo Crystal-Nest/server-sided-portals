@@ -1,9 +1,9 @@
 package it.crystalnest.server_sided_portals.handler;
 
 import it.crystalnest.server_sided_portals.Constants;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 /**
  * Handles datapack reload events.
