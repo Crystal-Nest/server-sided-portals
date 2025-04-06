@@ -9,7 +9,17 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
-## [v2.0.2] - 2025/04/dd
+## [v2.1.0] - 2025/04/dd
+
+- Ported to 1.21.5.
+
+## [v2.1.0] - 2025/04/06
+
+- It's now possible to define a list of gamemode changes to apply to a specific group of players (defined with either a permission level, an explicit list, or both) when travelling to a dimension.
+- It's now possible to change the dimension from where it's possible to gain access to another dimension.
+- New data pack capability to tweak the above changes.
+
+## [v2.0.2] - 2025/03/31
 
 - Ported to 1.21.5.
 
