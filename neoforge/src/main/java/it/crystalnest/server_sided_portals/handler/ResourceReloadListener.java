@@ -8,7 +8,7 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 /**
  * Handles datapack reload events.
  */
-@EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Constants.MOD_ID)
 public final class ResourceReloadListener extends CommonResourceReloadListener {
   /**
    * Handles the {@link AddServerReloadListenersEvent}.
