@@ -10,12 +10,12 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * Tweak for changing players' type when entering a dimension.
+ * Tweak for changing players' gamemode when entering a dimension.
  *
- * @param type type change.
+ * @param gamemode gamemode change.
  * @param permissionTweak {@link PermissionTweak}.
  */
-public record GamemodeTweak(GameType type, PermissionTweak permissionTweak) {
+public record GamemodeTweak(GameType gamemode, PermissionTweak permissionTweak) {
   /**
    * permission level.
    */
