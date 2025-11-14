@@ -1,5 +1,6 @@
 package it.crystalnest.server_sided_portals.api;
 
+import it.crystalnest.server_sided_portals.Constants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Holder;
@@ -9,7 +10,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -204,6 +207,18 @@ public interface CustomPortalChecker {
    */
   static Optional<HolderSet.Named<Item>> getCustomPortalIgniterItems(ResourceKey<Level> dimension) {
     return BuiltInRegistries.ITEM.getTag(getCustomPortalIgniterTag(dimension));
+  }
+
+  /**
+   * Returns whether the given entity can<b>not</b> travel to the specified dimension.
+   *
+   * @param entity entity trying to travel.
+   * @param dimension destination dimension.
+   * @return whether the entity can<b>not</b> travel to the dimension.
+   */
+  static boolean cannotTravel(Entity entity, ResourceKey<Level> dimension) {
+    DimensionTweak dimensionTweak = Constants.DIMENSION_TWEAKS.get(dimension);
+    return dimensionTweak != null && entity instanceof ServerPlayer player && !dimensionTweak.permission().isAllowed(player);
   }
 
   /**

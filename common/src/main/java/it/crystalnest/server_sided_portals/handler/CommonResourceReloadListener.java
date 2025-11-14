@@ -11,6 +11,7 @@ import com.google.gson.reflect.TypeToken;
 import it.crystalnest.server_sided_portals.Constants;
 import it.crystalnest.server_sided_portals.api.DimensionTweak;
 import it.crystalnest.server_sided_portals.api.GamemodeTweak;
+import it.crystalnest.server_sided_portals.api.PermissionTweak;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -43,6 +44,7 @@ public class CommonResourceReloadListener extends SimpleJsonResourceReloadListen
     gson = new GsonBuilder()
       .registerTypeAdapter(new TypeToken<ResourceKey<Level>>() {}.getType(), new ResourceKeyDeserializer())
       .registerTypeAdapter(GamemodeTweak.class, new GamemodeTweak.Deserializer())
+      .registerTypeAdapter(PermissionTweak.class, new PermissionTweak.Deserializer())
       .create();
   }
 

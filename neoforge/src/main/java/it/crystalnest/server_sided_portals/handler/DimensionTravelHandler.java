@@ -1,9 +1,11 @@
 package it.crystalnest.server_sided_portals.handler;
 
 import it.crystalnest.server_sided_portals.Constants;
+import it.crystalnest.server_sided_portals.api.CustomPortalChecker;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 /**
@@ -27,6 +29,18 @@ public final class DimensionTravelHandler extends GamemodeChangeHandler {
   public static void handle(PlayerEvent.PlayerChangedDimensionEvent event) {
     if (event.getEntity() instanceof ServerPlayer player) {
       INSTANCE.handle(player, event.getTo());
+    }
+  }
+
+  /**
+   * Handles the {@link EntityTravelToDimensionEvent}.
+   *
+   * @param event {@link EntityTravelToDimensionEvent}.
+   */
+  @SubscribeEvent
+  public static void handle(EntityTravelToDimensionEvent event) {
+    if (CustomPortalChecker.cannotTravel(event.getEntity(), event.getDimension())) {
+      event.setCanceled(true);
     }
   }
 }
