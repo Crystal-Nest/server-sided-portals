@@ -14,8 +14,9 @@ import java.util.List;
  * @param dimension dimension it's for.
  * @param connection dimension to be connected to.
  * @param gamemodes list of gamemode tweaks.
+ * @param gamemodes list of gamemode tweaks.
  */
-public record DimensionTweak(ResourceKey<Level> dimension, ResourceKey<Level> connection, List<GamemodeTweak> gamemodes) {
+public record DimensionTweak(ResourceKey<Level> dimension, ResourceKey<Level> connection, PermissionTweak permission, List<GamemodeTweak> gamemodes) {
   /**
    * {@link DimensionTweak} {@link Codec}.
    */
@@ -29,5 +30,5 @@ public record DimensionTweak(ResourceKey<Level> dimension, ResourceKey<Level> co
   /**
    * Default dimension tweak connected to the Overworld.
    */
-  public static final DimensionTweak OVERWORLD_CONNECTION = new DimensionTweak(null, Level.OVERWORLD, List.of());
+  public static final DimensionTweak OVERWORLD_CONNECTION = new DimensionTweak(null, Level.OVERWORLD, PermissionTweak.DEFAULT_PERMISSION, List.of());
 }
