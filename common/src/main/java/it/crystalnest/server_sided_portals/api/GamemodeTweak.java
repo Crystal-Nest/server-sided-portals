@@ -11,11 +11,37 @@ import java.util.List;
  * Tweak for changing players' gamemode when entering a dimension.
  *
  * @param gamemode gamemode change.
- * @param permission permission level.
- * @param profiles list of UUIDs.
- * @param whitelist whether to use this tweak as a whitelist.
+ * @param permissionTweak {@link PermissionTweak}.
  */
-public record GamemodeTweak(GameType gamemode, int permission, List<String> profiles, boolean whitelist) {
+public record GamemodeTweak(GameType gamemode, PermissionTweak permissionTweak) {
+  /**
+   * permission level.
+   */
+  public int permission() {
+    return permissionTweak().permission();
+  }
+
+  /**
+   * list of UUIDs.
+   */
+  public List<String> players() {
+    return permissionTweak().players();
+  }
+
+  /**
+   * teams the player belongs to.
+   */
+  public List<String> teams() {
+    return permissionTweak().teams();
+  }
+
+  /**
+   * whether to use this tweak as a whitelist.
+   */
+  public boolean whitelist() {
+    return permissionTweak().whitelist();
+  }
+
   /**
    * {@link GamemodeTweak} {@link Codec}.
    */
