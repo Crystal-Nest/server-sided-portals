@@ -48,7 +48,8 @@ public record GamemodeTweak(GameType gamemode, PermissionTweak permissionTweak) 
   public static final Codec<GamemodeTweak> CODEC = RecordCodecBuilder.create(instance -> instance.group(
     GameType.CODEC.fieldOf("type").forGetter(GamemodeTweak::gamemode),
     Codec.INT.optionalFieldOf("permission", Commands.LEVEL_OWNERS + 1).forGetter(GamemodeTweak::permission),
-    Codec.STRING.listOf().optionalFieldOf("players", List.of()).forGetter(GamemodeTweak::profiles),
+    Codec.STRING.listOf().optionalFieldOf("players", List.of()).forGetter(GamemodeTweak::players),
+    Codec.STRING.listOf().optionalFieldOf("teams", List.of()).forGetter(GamemodeTweak::teams),
     Codec.BOOL.optionalFieldOf("whitelist", false).forGetter(GamemodeTweak::whitelist)
-  ).apply(instance, GamemodeTweak::new));
+  ).apply(instance, (gamemode, permission, players, teams, whitelist) -> new GamemodeTweak(gamemode, new PermissionTweak(permission, players, teams, whitelist))));
 }
