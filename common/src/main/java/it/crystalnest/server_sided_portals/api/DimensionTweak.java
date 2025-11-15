@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @param dimension dimension it's for.
  * @param connection dimension to be connected to.
- * @param gamemodes list of gamemode tweaks.
+ * @param permission permission tweak.
  * @param gamemodes list of gamemode tweaks.
  */
 public record DimensionTweak(ResourceKey<Level> dimension, ResourceKey<Level> connection, PermissionTweak permission, List<GamemodeTweak> gamemodes) {
@@ -24,6 +24,7 @@ public record DimensionTweak(ResourceKey<Level> dimension, ResourceKey<Level> co
     ResourceKey.codec(Registries.DIMENSION).fieldOf("dimension").forGetter(DimensionTweak::dimension),
     // Portals of the specified dimension will activate only within the connection dimension or within the specified dimension itself; in the latter case, they will lead back to the connection dimension.
     ResourceKey.codec(Registries.DIMENSION).optionalFieldOf("connection", Level.OVERWORLD).forGetter(DimensionTweak::connection),
+    PermissionTweak.CODEC.optionalFieldOf("permission", PermissionTweak.DEFAULT_PERMISSION).forGetter(DimensionTweak::permission),
     GamemodeTweak.CODEC.listOf().optionalFieldOf("gamemode", List.of()).forGetter(DimensionTweak::gamemodes)
   ).apply(instance, DimensionTweak::new));
 
