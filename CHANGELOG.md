@@ -9,9 +9,11 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
-## [v2.1.0] - 2025/10/13
+## [v2.2.0] - 2025/11/15
 
 - Ported to 1.21.10.
+- Added new permission tweak for a dimension tweak, allowing to specify which players can travel to a dimension.
+- Added new field to the gamemode tweak that allows to specify player teams.
 
 ## [v2.1.0] - 2025/07/22
 
