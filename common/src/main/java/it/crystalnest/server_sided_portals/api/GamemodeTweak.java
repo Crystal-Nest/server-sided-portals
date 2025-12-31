@@ -2,7 +2,7 @@ package it.crystalnest.server_sided_portals.api;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.commands.Commands;
+import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.world.level.GameType;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public record GamemodeTweak(GameType gamemode, PermissionTweak permissionTweak) 
    */
   public static final Codec<GamemodeTweak> CODEC = RecordCodecBuilder.create(instance -> instance.group(
     GameType.CODEC.fieldOf("type").forGetter(GamemodeTweak::gamemode),
-    Codec.INT.optionalFieldOf("permission", Commands.LEVEL_OWNERS + 1).forGetter(GamemodeTweak::permission),
+    Codec.INT.optionalFieldOf("permission", PermissionLevel.OWNERS.id() + 1).forGetter(GamemodeTweak::permission),
     Codec.STRING.listOf().optionalFieldOf("players", List.of()).forGetter(GamemodeTweak::players),
     Codec.STRING.listOf().optionalFieldOf("teams", List.of()).forGetter(GamemodeTweak::teams),
     Codec.BOOL.optionalFieldOf("whitelist", false).forGetter(GamemodeTweak::whitelist)

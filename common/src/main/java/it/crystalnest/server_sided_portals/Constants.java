@@ -1,8 +1,8 @@
 package it.crystalnest.server_sided_portals;
 
 import it.crystalnest.server_sided_portals.api.DimensionTweak;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
@@ -32,9 +32,9 @@ public final class Constants {
   public static final ThreadLocal<ResourceKey<Level>> DIMENSION_ORIGIN_THREAD = ThreadLocal.withInitial(() -> Level.OVERWORLD);
 
   /**
-   * {@link ResourceLocation} of possible dimension tweaks.
+   * {@link Identifier} of possible dimension tweaks.
    */
-  public static final ResourceLocation DIMENSION_TWEAKS_ID = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "tweaks");
+  public static final Identifier DIMENSION_TWEAKS_ID = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "tweaks");
 
   /**
    * Loaded dimension tweaks.

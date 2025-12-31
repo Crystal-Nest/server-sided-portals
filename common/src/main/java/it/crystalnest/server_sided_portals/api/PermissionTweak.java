@@ -2,8 +2,9 @@ package it.crystalnest.server_sided_portals.api;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +22,7 @@ public record PermissionTweak(int permission, List<String> players, List<String>
    * {@link GamemodeTweak} {@link Codec}.
    */
   public static final Codec<PermissionTweak> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-    Codec.INT.optionalFieldOf("permission", Commands.LEVEL_OWNERS + 1).forGetter(PermissionTweak::permission),
+    Codec.INT.optionalFieldOf("permission", PermissionLevel.OWNERS.id() + 1).forGetter(PermissionTweak::permission),
     Codec.STRING.listOf().optionalFieldOf("players", List.of()).forGetter(PermissionTweak::players),
     Codec.STRING.listOf().optionalFieldOf("teams", List.of()).forGetter(PermissionTweak::teams),
     Codec.BOOL.optionalFieldOf("whitelist", false).forGetter(PermissionTweak::whitelist)
@@ -30,7 +31,7 @@ public record PermissionTweak(int permission, List<String> players, List<String>
   /**
    * Default permission tweak that allows any player.
    */
-  public static final PermissionTweak DEFAULT_PERMISSION = new PermissionTweak(Commands.LEVEL_OWNERS + 1, Collections.emptyList(), Collections.emptyList(), false);
+  public static final PermissionTweak DEFAULT_PERMISSION = new PermissionTweak(PermissionLevel.OWNERS.id() + 1, Collections.emptyList(), Collections.emptyList(), false);
 
   /**
    * Checks whether the given player is allowed (can travel / the tweak applies).
@@ -40,9 +41,19 @@ public record PermissionTweak(int permission, List<String> players, List<String>
    */
   public boolean isAllowed(ServerPlayer player) {
     return whitelist() == (
-      player.getPermissionLevel() >= permission() ||
+      checkPermission(player) ||
       players().stream().anyMatch(profile -> player.getStringUUID().equalsIgnoreCase(profile)) ||
       (player.getTeam() != null && teams().stream().anyMatch(team -> player.getTeam().getName().equals(team)))
     );
+  }
+
+  /**
+   * Checks whether the given player has matching permission level.
+   *
+   * @param player player.
+   * @return whether the player has matching permission level.
+   */
+  private boolean checkPermission(ServerPlayer player) {
+    return permission() <= PermissionLevel.OWNERS.id() && (permission() < PermissionLevel.ALL.id() || player.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.byId(permission()))));
   }
 }

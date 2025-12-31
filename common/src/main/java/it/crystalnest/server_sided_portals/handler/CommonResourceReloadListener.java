@@ -3,7 +3,7 @@ package it.crystalnest.server_sided_portals.handler;
 import it.crystalnest.server_sided_portals.Constants;
 import it.crystalnest.server_sided_portals.api.DimensionTweak;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -21,7 +21,7 @@ public class CommonResourceReloadListener extends SimpleJsonResourceReloadListen
   }
 
   @Override
-  protected void apply(Map<ResourceLocation, List<DimensionTweak>> datamap, @NotNull ResourceManager manager, @NotNull ProfilerFiller profiler) {
+  protected void apply(Map<Identifier, List<DimensionTweak>> datamap, @NotNull ResourceManager manager, @NotNull ProfilerFiller profiler) {
     Constants.DIMENSION_TWEAKS.clear();
     for (List<DimensionTweak> tweaks : datamap.values()) {
       for (DimensionTweak tweak : tweaks) {

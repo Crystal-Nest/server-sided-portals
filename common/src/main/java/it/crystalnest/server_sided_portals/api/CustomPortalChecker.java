@@ -7,8 +7,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -70,8 +70,8 @@ public interface CustomPortalChecker {
    * @param dimension name of the target dimension.
    * @return whether the Portal at the given position is for the specified dimension.
    */
-  static boolean isPortalForDimension(Level level, BlockPos pos, ResourceLocation dimension) {
-    return getPortalDimension(level, pos).location().equals(dimension);
+  static boolean isPortalForDimension(Level level, BlockPos pos, Identifier dimension) {
+    return getPortalDimension(level, pos).identifier().equals(dimension);
   }
 
   /**
@@ -106,8 +106,8 @@ public interface CustomPortalChecker {
    * @param dimension name of the target dimension.
    * @return whether the Portal at the given position is directed to the specified dimension.
    */
-  static boolean isPortalGoingTo(Level level, BlockPos pos, ResourceLocation dimension) {
-    return getPortalDestination(level, pos).location().equals(dimension);
+  static boolean isPortalGoingTo(Level level, BlockPos pos, Identifier dimension) {
+    return getPortalDestination(level, pos).identifier().equals(dimension);
   }
 
   /**
@@ -158,7 +158,7 @@ public interface CustomPortalChecker {
    * @return Block Tag for the Custom Portal Frame.
    */
   static TagKey<Block> getCustomPortalFrameTag(ResourceKey<Level> dimension) {
-    return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(dimension.location().getNamespace(), dimension.location().getPath() + "_portal_frame"));
+    return TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(dimension.identifier().getNamespace(), dimension.identifier().getPath() + "_portal_frame"));
   }
 
   /**
@@ -198,7 +198,7 @@ public interface CustomPortalChecker {
    * @return Item Tag for the Custom Portal Igniter item.
    */
   static TagKey<Item> getCustomPortalIgniterTag(ResourceKey<Level> dimension) {
-    return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(dimension.location().getNamespace(), dimension.location().getPath() + "_portal_igniter"));
+    return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(dimension.identifier().getNamespace(), dimension.identifier().getPath() + "_portal_igniter"));
   }
 
   /**
