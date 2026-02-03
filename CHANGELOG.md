@@ -9,6 +9,10 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v2.2.1] - 2025/02/03
+
+- Fixed compatibility with Lithium.
+
 ## [v2.2.0] - 2025/12/31
 
 - Ported to 1.21.11.
@@ -80,6 +84,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 [Unreleased]: https://github.com/crystal-nest/server-sided-portals
 [README]: https://github.com/crystal-nest/server-sided-portals#readme
 
+[v2.2.1]: https://github.com/crystal-nest/server-sided-portals/releases?q=2.2.1
 [v2.2.0]: https://github.com/crystal-nest/server-sided-portals/releases?q=2.2.0
 [v2.1.0]: https://github.com/crystal-nest/server-sided-portals/releases?q=2.1.0
 [v2.0.2]: https://github.com/crystal-nest/server-sided-portals/releases?q=2.0.2
