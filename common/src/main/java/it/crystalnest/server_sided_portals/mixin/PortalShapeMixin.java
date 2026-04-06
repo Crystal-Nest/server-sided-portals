@@ -96,7 +96,7 @@ public abstract class PortalShapeMixin implements CustomPortalChecker {
             if (width > 0) {
               MutableInt portalBlocks = new MutableInt();
               // The first Custom Dimension to match breaks the loop and validates the Custom Portal.
-              PortalShape portal = new PortalShape(axis, portalBlocks.getValue(), direction, bottomLeft, width, calculateHeightForCustomDimension(level, bottomLeft, direction, width, portalBlocks, frameBlock));
+              PortalShape portal = new PortalShape(axis, portalBlocks.get().intValue(), direction, bottomLeft, width, calculateHeightForCustomDimension(level, bottomLeft, direction, width, portalBlocks, frameBlock));
               if (portal.isValid()) {
                 ((CustomPortalChecker) portal).setInfos(dimension, serverLevel.dimension() == dimension ? Constants.getTweak(dimension).connection() : dimension);
               }

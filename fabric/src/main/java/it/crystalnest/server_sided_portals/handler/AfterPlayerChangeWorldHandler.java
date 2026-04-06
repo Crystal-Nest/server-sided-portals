@@ -1,11 +1,11 @@
 package it.crystalnest.server_sided_portals.handler;
 
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
- * Handles {@link ServerEntityWorldChangeEvents}.
+ * Handles {@link ServerEntityLevelChangeEvents}.
  */
 public final class AfterPlayerChangeWorldHandler extends GamemodeChangeHandler {
   /**
@@ -16,7 +16,7 @@ public final class AfterPlayerChangeWorldHandler extends GamemodeChangeHandler {
   private AfterPlayerChangeWorldHandler() {}
 
   /**
-   * Handles {@link ServerEntityWorldChangeEvents}.
+   * Handles {@link ServerEntityLevelChangeEvents}.
    *
    * @param player player travelling.
    * @param origin origin dimension.
