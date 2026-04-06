@@ -15,8 +15,8 @@ import java.util.Map;
 /**
  * Handler for resource reload events.
  */
-public class CommonResourceReloadListener extends SimpleJsonResourceReloadListener<List<DimensionTweak>> {
-  protected CommonResourceReloadListener() {
+public final class ResourceReloadListener extends SimpleJsonResourceReloadListener<List<DimensionTweak>> {
+  public ResourceReloadListener() {
     super(DimensionTweak.CODEC.listOf(), FileToIdConverter.json(Constants.DIMENSION_TWEAKS_ID.getPath()));
   }
 

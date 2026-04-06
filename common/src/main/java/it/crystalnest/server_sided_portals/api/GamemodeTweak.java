@@ -15,6 +15,17 @@ import java.util.List;
  */
 public record GamemodeTweak(GameType gamemode, PermissionTweak permissionTweak) {
   /**
+   * {@link GamemodeTweak} {@link Codec}.
+   */
+  public static final Codec<GamemodeTweak> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    GameType.CODEC.fieldOf("type").forGetter(GamemodeTweak::gamemode),
+    Codec.INT.optionalFieldOf("permission", PermissionLevel.OWNERS.id() + 1).forGetter(GamemodeTweak::permission),
+    Codec.STRING.listOf().optionalFieldOf("players", List.of()).forGetter(GamemodeTweak::players),
+    Codec.STRING.listOf().optionalFieldOf("teams", List.of()).forGetter(GamemodeTweak::teams),
+    Codec.BOOL.optionalFieldOf("whitelist", false).forGetter(GamemodeTweak::whitelist)
+  ).apply(instance, (gamemode, permission, players, teams, whitelist) -> new GamemodeTweak(gamemode, new PermissionTweak(permission, players, teams, whitelist))));
+
+  /**
    * permission level.
    */
   public int permission() {
@@ -41,15 +52,4 @@ public record GamemodeTweak(GameType gamemode, PermissionTweak permissionTweak) 
   public boolean whitelist() {
     return permissionTweak().whitelist();
   }
-
-  /**
-   * {@link GamemodeTweak} {@link Codec}.
-   */
-  public static final Codec<GamemodeTweak> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-    GameType.CODEC.fieldOf("type").forGetter(GamemodeTweak::gamemode),
-    Codec.INT.optionalFieldOf("permission", PermissionLevel.OWNERS.id() + 1).forGetter(GamemodeTweak::permission),
-    Codec.STRING.listOf().optionalFieldOf("players", List.of()).forGetter(GamemodeTweak::players),
-    Codec.STRING.listOf().optionalFieldOf("teams", List.of()).forGetter(GamemodeTweak::teams),
-    Codec.BOOL.optionalFieldOf("whitelist", false).forGetter(GamemodeTweak::whitelist)
-  ).apply(instance, (gamemode, permission, players, teams, whitelist) -> new GamemodeTweak(gamemode, new PermissionTweak(permission, players, teams, whitelist))));
 }
