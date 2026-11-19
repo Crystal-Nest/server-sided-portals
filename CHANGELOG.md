@@ -9,6 +9,12 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v2.2.1] - 2026/11/dd
+
+- Ported to 26.3.
+- Updated to Cobweb 2.0.0.
+- Fixed dimension permissions being bypassed by direct player teleport calls on Fabric.
+
 ## [v2.2.1] - 2025/02/03
 
 - Fixed compatibility with Lithium.

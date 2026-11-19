@@ -39,7 +39,7 @@ public abstract class ItemUseHandler {
         if (portal.isPresent()) {
           ResourceKey<Level> dimension = ((CustomPortalChecker) portal.get()).dimension();
           if (CustomPortalChecker.getCustomPortalFrameTag(dimension).equals(frame.get()) && CustomPortalChecker.getCustomPortalIgniterTag(dimension).equals(igniter.get())) {
-            player.swing(hand, true);
+            player.swing(hand, player.getItemInHand(hand).getInteractAnimation(), true);
             portal.get().createPortalBlocks(level);
             return true;
           }
